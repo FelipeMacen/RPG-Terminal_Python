@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from rich import print
 from random import randint
 
+#Apresentação do Jogo:
 def menuinicial():
     print("-"*100)
     print("MistyLand".center(100))
@@ -51,7 +52,7 @@ def menuinicial():
             "fonte de energia através da manipulação de cargas elétricas negativas de particulas subatômicas."
         )
 
-
+#Funcionalidade que controla toda a parte de criação do personagem.
 def criacao():
     limpa()
     infs = []
@@ -99,6 +100,7 @@ def criacao():
     #print(meth.__dict__)
     return meth
 
+#Funcionalidades para manter o código limpo:
 def limpa():
     os.system('cls' if os.name == 'nt' else 'clear')
     for _ in range(3):
@@ -112,7 +114,71 @@ def enter():
         if input() == "":
             break
 
+#Mundo e Exploração:
+def vila_inicial(principal):
+    while True:
+        print(f"{principal.nome} se encontra na Vila Inicial.\n"
+              f"Após receber sua missão, Você pode escolher 3 caminhos para seguir:\n")
+        principal.mapa()
+        resp = input("Por Qual Delas Deseja Seguir?\n[1]LAGO DO ESQUECIMENTO\n"
+                     "[2]FLORESTA DA PERDIÇÃO\n[3]CAVERNA LABIRÍNTICA\n")
 
+        match resp:
+            case "1":
+                lago_do_esquecimento(principal)
+                return
+            case "2":
+                floresta_da_perdicao(principal)
+                return
+            case "3":
+                caverna_labirintica(principal)
+                return
+            case _:
+                print("Por favor, Escolha uma opção válida")
+                continue
+
+def lago_do_esquecimento(principal):
+    # evento aleatorio:Item, NPC, Historia
+    print(f"Você se vê sozinho em um imenso lago...\n{principal.nome} olha para baixo e percebe que é como se"
+          f"algo enorme estivesse se movimentando no fundo do lago.Causando uma enorme sombra por onde passa."
+          f"{principal.nome} ainda pensa em voltar, mas antes mesmo de qualquer possível reação.."
+          f"\n[red]O Monstro Do Lago Aparece:[/] [blue]NESSIE[/]")
+
+    enter()
+    combate(principal, Nessie())
+
+
+def floresta_da_perdicao(principal):
+    # evento aleatorio:Item, NPC, Historia
+    print("De repente, em meio a densa floresta..\nVocê começa a ouvir [red]longos assobios..[/]\n"
+          f"{principal.nome} vai ficando cada vez mais zonzo e [red]perdido...[/]\n"
+          f"Quando se da conta, você está totalmente perdido. No coração da floresta, Diante do que se parece"
+          f"um [red]templo de pedra.[/]Os assobios voltam de forma ainda mais intensa. Quando de repente...\n"
+          f"[red]CURUPIRA aparece[/]")
+
+    enter()
+    combate(principal, Curupira())
+
+def caverna_labirintica(principal):
+    while True:
+        #evento aleatorio:Item, NPC, Historia
+        print("Você encontra uma figura estranha. Algo como um [red]urso com chifres[/]"
+              " aparentemente dormindo...\nDeseja se aproximar?\n[1]Sim\n[2]Não\n")
+
+        resp = input()
+        if resp == "1":
+            break
+        else:
+            print("Você volta para o labirinto na esperança de encontrar um outro caminho")
+            continue
+
+
+    print("[red]MINOTAURO Acorda..[/]")
+    enter()
+    combate(principal, Minotauro())
+
+
+#Sistema de Combate:
 def combate(principal, inimigo):
     while True:
             for efeito in principal.efeitos:
@@ -135,10 +201,10 @@ def combate(principal, inimigo):
 
 
 def turno_jogador(principal, inimigo):
-    print(f"Você se depara com {inimigo.nome}! O que deseja fazer?")
+    limpa()
+    print(f"\nO que deseja fazer?")
     print(
         "[bright_white][1][/]Atacar\n[bright_white][2][/]Defender\n[bright_white][3][/]Usar Item\n[bright_white][4][/]Fugir")
-    print(principal.defesa)
     resp = int(input())
     match resp:
         case 1:
@@ -161,7 +227,7 @@ def turno_jogador(principal, inimigo):
     return False
 
 def turno_inimigo(principal, inimigo):
-    decisao = 0#MUDAR PARA randintdeposi
+    decisao = randint(0, 1)
 
     match decisao:#talvez fazer um defender depois
         case 0:#atacar
@@ -237,7 +303,7 @@ def inventario(principal):
 
 
     return
-
+#classe de personagens principais
 class Personagem(ABC):
     def __init__(self, nome, defesa, danobase):
         self.nome = nome
@@ -263,7 +329,7 @@ class Personagem(ABC):
 
     def mapa(self):
         print(
-            f"\nLAGO DO ESQUECIMENTO{' '*9}FLORESTA DA PERDIÇÃO{' '*8}CAVERNA DAS LAMENTAÇÕES\n"
+            f"\nLAGO DO ESQUECIMENTO{' '*8}FLORESTA DA PERDIÇÃO{' '*8}CAVERNA LABIRÍNTICA\n"
             f"[bright_white]{' '*21} {chr(92)}{' '*15}|{' '*17}/[/]\n\n"
             f"{' '* 32}VILA INICIAL"
         )
@@ -278,6 +344,7 @@ class Personagem(ABC):
     @abstractmethod
     def hability(self, inimigo):
         pass
+
 
     def atualizar_efeito(self):
         for efeito in self.efeitos:
@@ -423,6 +490,7 @@ class Mercenario(Personagem):
 
         return
 
+#Classes de inimigos, mini-bosses, etc
 class Inimigos(ABC):
     def __init__(self, nome, danobase):
         self.nome = nome
@@ -470,8 +538,8 @@ class Inimigos(ABC):
         pass
 
 class Minotauro(Inimigos):
-    def __init__(self, nome):
-        super().__init__(nome, 30)
+    def __init__(self):
+        super().__init__("Minotauro", 30)
         self.ataques = {"Soco Pesado":self.danobase*1, "Coice Duplo":self.danobase*1, "Lançardor Subterraneo":self.danobase*1}
         self.habilidades = {"Chife Demoníaco": 44, "Furia Divina":10}
         #investida para chifrar o inimigo
@@ -503,8 +571,8 @@ class Minotauro(Inimigos):
         return
 
 class Curupira(Inimigos):
-    def __init__(self, nome):
-        super().__init__(nome, 45)
+    def __init__(self):
+        super().__init__("Curupira", 45)
         self.ataques = {"Chute Trocado": 30, "Investida Furiosa": 30, "Chicote de Cipó":30}
         self.habilidades = {"Confusão Mental": 35, "Pai Natureza":44}
         #confusão mental: menos dano, mas a vitima pode ganhar o status, "Lost", perde um turno tentando recobrar
@@ -540,8 +608,8 @@ class Curupira(Inimigos):
         return
 
 class Nessie(Inimigos):
-    def __init__(self, nome):
-        super().__init__(nome, 30)
+    def __init__(self):
+        super().__init__("Nessie", 30)
         self.ataques = {"Martelo de Cauda": 30, "Tiro de Água":30, "Mordida Feroz": 30}
         self.habilidades = { "Canhão de Água": 44, "Território": 0}
         #territorio: tentar levar o inimigo para o fundo do mar. Os ataques do nessie ficariam muito mais fortes
@@ -575,6 +643,7 @@ class Nessie(Inimigos):
             self.efeitos.append(Territorio(3))
         return
 
+#Classe que controla os efeitos que serão aplicados aos personagens e como serão aplicados
 class Efeitos(ABC):
     def __init__(self, nome, duracao, tipo):
         self.nome = nome
@@ -664,3 +733,6 @@ class Perdido(Efeitos):
                 self.duracao = 0
                 break
             turno_inimigo(personagem, inimigo)
+
+cav = Cavaleiro("ricardo", 30, 30)
+vila_inicial(cav)

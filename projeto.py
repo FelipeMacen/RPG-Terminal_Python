@@ -2,16 +2,29 @@ from time import sleep
 import os
 from abc import ABC, abstractmethod
 from rich import print
+from rich.panel import Panel
+from rich.live import Live
 from random import randint
+
+
+def exibe(txt_completo, obj=None, secundario= None, terceiro=None, time=0.04):
+    txt_atual = ""
+    painel = Panel(txt_atual, width=120, border_style="yellow")
+    with Live(painel, refresh_per_second=25) as live:
+        for letra in txt_completo:
+            txt_atual += letra
+            live.update(Panel(txt_atual, width=80, border_style="yellow"))
+            sleep(time)
+
 
 #Apresentação do Jogo:
 def menuinicial():
-    print("-"*100)
-    print("MistyLand".center(100))
-    print("-" * 100)
+    exibe("MistyLand".center(75),time=0)
     while True:
         try:
-           resp = int(input("\n[1] Novo Jogo\n[2] Sair\n"))
+            exibe("\n[1] Novo Jogo\n[2] Sair\n")
+            resp = int(input())
+            limpa()
         except:
             print("Por favor digite uma opçã válida.")
             continue
@@ -25,32 +38,38 @@ def menuinicial():
     else:
         return
 
-    print(f"Olá {meth.nome}! Seja bem vindo ao mundo de MistyLand.")
-    print("No Mundo de MistyLand existem 2 principais forças dominantes.")
+    limpa()
+
+    exibe(f"Olá [green]{meth.nome}[/]! Seja bem vindo ao mundo de MistyLand. \n"
+          f"No Mundo de MistyLand existem duas principais forças dominantes.", meth, time=0.02)
 
     if meth.__class__.__name__ == "Cavaleiro":#Parafina(Vem do petroleo) e Drake (Edwin Drake) por causa do Petróleo.
-        print(
-            "Uma dessas forças é um reino chamado Parafina. Onde o Rei Drake, "
+        exibe(
+            "Uma dessas forças é um reino chamado [blue]Parafina[/]. Onde o [blue]Rei Drake[/], "
             "com sua potência militar de cavaleiros, conquistaram seu espaço no mapa vencendo guerras e principalmente"
-            " após a descoberta de um é um combustível fóssil líquido, oleoso e inflamável, "
+            " após a descoberta de um é um [blue]combustível fóssil[/] líquido, oleoso e inflamável, "
             "que foi usado como energia por esse reino para criar diversas evoluções."
-        )
+        , time=0.02)
 
     if meth.__class__.__name__ == "Mago":
-        print(
-            "Uma dessas forças é um lugar chamado Spell Town. Onde Gargamel, o mestre dos magos, juntou"
+        exibe(
+            "Uma dessas forças é um lugar chamado [red]Spell Town[/]. Onde [red]Gargamel[/], o mestre dos magos, juntou"
             "muitos sábios e estudiosos, para pesquisarem uma fonte de energia gerada pelo movimento de partículas minúsculas"
-            "que possuem carga elétrica negativa. A pesquisa foi um sucesso e Spell Town, através de muitas evoluções"
+            "que possuem [red]carga elétrica negativa[/]. A pesquisa foi um sucesso e Spell Town, através de muitas evoluções"
             "geradas por essa energia, conquistou seu lugar no mundo de MistyLand."
-        )
+        , time=0.02)
 
     if meth.__class__.__name__ == "Mercenario":
-        print(
-            " Uma delas é Parafina, um reino que prosperou muito após a descoberta de uma fonte de energia vinda de um "
-            "combustível fóssil líquido, oleoso e inflamável.\n"
-            " A segunda por sua vez, se chama Spell Town. Uma cidade que teve sua ascensão após descobrir uma"
-            "fonte de energia através da manipulação de cargas elétricas negativas de particulas subatômicas."
-        )
+        exibe(
+            " Uma delas é [blue]Parafina[/], um reino que prosperou muito após a descoberta de uma fonte de energia vinda de um "
+            "[blue]combustível fóssil[/] líquido, oleoso e inflamável.\n"
+            " A segunda por sua vez, se chama [red]Spell Town[/]. Uma cidade que teve sua ascensão após descobrir uma "
+            "fonte de energia através da manipulação de [red]cargas elétricas negativas[/] de particulas subatômicas."
+        , time=0.02)
+
+    enter()
+    limpa()
+    vila_inicial(meth)
 
 #Funcionalidade que controla toda a parte de criação do personagem.
 def criacao():
@@ -58,46 +77,48 @@ def criacao():
     infs = []
     while True:
         try:
-            infs.append(int(input("\nEscolha uma classe:\n[1] Cavaleiro\n[2] Mago\n[3] Mercenário\n")))
+            exibe("\nEscolha uma classe:\n[1] Cavaleiro\n[2] Mago\n[3] Mercenário\n")
+            infs.append(int(input()))
             limpa()
             if infs[0] == 1:
-                print("\nClasse Cavaleiro:\n"
+                exibe("\nClasse Cavaleiro:\n"
                       "Vida: HP base + Armadura.\n"
                       "Arma Principal: Espada (Médio Alcance)\n"
                       "Ataques Básicos: Ataque Com Espada, Aparo, Esquiva\n"
-                      "Habilidades Especias: Ataque Pesado e Bloqueio Com Escudo")
+                      "Habilidades Especias: Ataque Pesado e Bloqueio Com Escudo", time=0.01)
             elif infs[0] == 2:
-                print("\nClasse Mago:\n"
+                exibe("\nClasse Mago:\n"
                       "Vida: Menor HP.\n"
                       "Armas Principais: Cajado e Livro de Magias (Longo Alcance).\n"
                       "Ataques Básicos: Ataque Com Cajado, Bola de Fogo, Teletransporte\n"
-                      "Habilidades Especias: Chuva de Relâmpagos e Feitiço de cura")
+                      "Habilidades Especias: Chuva de Relâmpagos e Feitiço de cura", time=0.01)
             elif infs[0] == 3:
-                print("\nClasse Mercenário:\n"
+                exibe("\nClasse Mercenário:\n"
                       "Vida: HP base.\n"
                       "Armas Principais: Adagas Duplas (Curto Alcance).\n"
                       "Ataques Básicos: Ataque Com Adaga, Chute Giratório, Arremessar Faca\n"
-                      "Habilidades Especias: Investida Vorpal e Filho da luz (aumenta a velocidade temporariamente)")
+                      "Habilidades Especias: Investida Vorpal e Filho da luz (aumenta a velocidade temporariamente)", time=0.01)
         except Exception as e:
             continue
-        resp = input(f"Confirmar escolha da classe {infs[0]}\n[1] Sim\n[2] Não")
+        exibe(f"Confirmar escolha da classe {infs[0]}\n[1] Sim\n[2] Não", infs, time = 0)
+        resp = input()
         limpa()
         if resp == "1":
             break
         infs.pop()
 
-    infs.append(input("\nAgora escolha o nome:"))
+    exibe("\nAgora escolha o nome:")
+    infs.append(input())
 
     meth = "nada"
     match infs[0]:
         case 1:
-            meth = Cavaleiro(infs[1])
+            meth = Cavaleiro(infs[1], 30, 30)
         case 2:
-            meth = Mago(infs[1])
+            meth = Mago(infs[1], 10, 30)
         case 3:
-            meth = Mercenario(infs[1])
+            meth = Mercenario(infs[1],25, 30)
 
-    #print(meth.__dict__)
     return meth
 
 #Funcionalidades para manter o código limpo:
@@ -117,11 +138,12 @@ def enter():
 #Mundo e Exploração:
 def vila_inicial(principal):
     while True:
-        print(f"{principal.nome} se encontra na Vila Inicial.\n"
-              f"Após receber sua missão, Você pode escolher 3 caminhos para seguir:\n")
+        exibe(f"{principal.nome} se encontra na Vila Inicial.\n"
+              f"Após receber sua missão, Você pode escolher 3 caminhos para seguir:\n", principal, time=0.02)
         principal.mapa()
-        resp = input("Por Qual Delas Deseja Seguir?\n[1]LAGO DO ESQUECIMENTO\n"
-                     "[2]FLORESTA DA PERDIÇÃO\n[3]CAVERNA LABIRÍNTICA\n")
+        exibe("Por Qual Delas Deseja Seguir?\n[1]LAGO DO ESQUECIMENTO\n"
+                     "[2]FLORESTA DA PERDIÇÃO\n[3]CAVERNA LABIRÍNTICA\n", time=0.03)
+        resp = input()
 
         match resp:
             case "1":
@@ -140,14 +162,14 @@ def vila_inicial(principal):
 def lago_do_esquecimento(principal):
     evento_aleatorio(principal, "lago")
 
-    print(f"Você se vê sozinho em um imenso e denso lago...\n{principal.nome} olha para baixo e percebe que é como se"
+    exibe(f"Você se vê sozinho em um imenso e denso lago...\n{principal.nome} olha para baixo e percebe que é como se"
           f"algo enorme estivesse se movimentando no fundo do lago.Causando uma enorme sombra por onde passa."
           f"{principal.nome} ainda pensa em voltar, mas antes mesmo de qualquer possível reação.."
-          f"\n[red]O Monstro Do Lago Aparece:[/] [blue]NESSIE[/]")
+          f"\n[red]O Monstro Do Lago Aparece:[/] [blue]NESSIE[/]",obj=principal)
 
     enter()
     if combate(principal, Nessie()):
-        print("Após derrotar Nissie, a densidade do lago desaparece e você consegue ver que no fundo"
+        exibe("Após derrotar Nissie, a densidade do lago desaparece e você consegue ver que no fundo"
               "do profundo lago, parece ter algo como um laboratório.\n")
         #talvez adquirir um item
 
@@ -155,33 +177,35 @@ def lago_do_esquecimento(principal):
 def floresta_da_perdicao(principal):
     evento_aleatorio(principal, "floresta")
 
-    print("De repente, em meio a densa floresta..\nVocê começa a ouvir [red]longos assobios..[/]\n"
+    exibe("De repente, em meio a densa floresta..\nVocê começa a ouvir [red]longos assobios..[/]\n"
           f"{principal.nome} vai ficando cada vez mais zonzo e [red]perdido...[/]\n"
           f"Quando se da conta, você está totalmente perdido. No coração da floresta, Diante do que se parece"
           f"um [red]templo de pedra.[/]Os assobios voltam de forma ainda mais intensa. Quando de repente...\n"
-          f"[red]CURUPIRA aparece[/]")
+          f"[red]CURUPIRA aparece[/]", obj=principal)
 
     enter()
-    combate(principal, Curupira())
+    if combate(principal, Curupira()):
+        exibe("ganhou paezao")
     # talvez adquirir um item
 
 def caverna_labirintica(principal):
     while True:
         evento_aleatorio(principal, "caverna")
-        print("Você encontra uma figura estranha. Algo como um [red]urso com chifres[/]"
+        exibe("Você encontra uma figura estranha. Algo como um [red]urso com chifres[/]"
               " aparentemente dormindo...\nDeseja se aproximar?\n[1]Sim\n[2]Não\n")
 
         resp = input()
         if resp == "1":
             break
         else:
-            print("Você volta para o labirinto na esperança de encontrar um outro caminho")
+            exibe("Você volta para o labirinto na esperança de encontrar um outro caminho")
             continue
 
 
-    print("[red]MINOTAURO Acorda..[/]")
+    exibe("[red]MINOTAURO Acorda..[/]")
     enter()
-    combate(principal, Minotauro())
+    if combate(principal, Minotauro()):
+        exibe("ganhou pae")
     # talvez adquirir um item
 
 def evento_aleatorio(principal, lugar):
@@ -197,99 +221,107 @@ def evento_aleatorio(principal, lugar):
 
 def npc(principal, lugar):
     if lugar == "lago":
-        print(f"{principal.nome} avista um grupo de pescadores\nDeseja se aproximar?")
-        resp = input("[1]Sim\n[2]Não\n")
+        exibe(f"{principal.nome} avista um grupo de pescadores\nDeseja se aproximar?\n[1]Sim\n[2]Não\n",obj=principal)
+        resp = input()
         match resp:
             case "1":
-                print(f"[yellow]Pescadores:[/] O que está fazendo aqui?\n[blue]{principal.nome}:[/]")
-                resp = input(f"[1]Apenas de passagem...\n[2]Não é da sua conta\n")
+                exibe(f"[yellow]Pescadores:[/] O que está fazendo aqui?\n[blue]{principal.nome}:[/]\n"
+                      f"[1]Apenas de passagem...\n[2]Não é da sua conta\n", obj=principal)
+                resp = input()
                 match resp:
                     case "1":
-                        print("[yellow]Pescadores:[/] Normalmente ninguém vem aqui. Até o número de pescadores diminui"
+                        exibe("[yellow]Pescadores:[/] Normalmente ninguém vem aqui. Até o número de pescadores diminui"
                               "depois que os peixes começaram a morrer de forma misteriosa. Deve ser"
                               "o [red]Monstro do lago ness[/] que ronda essa região. Tome cuidado amigo...")
                     case _:
-                        print("[yellow]Pescadores:[/] Entendido, boa viagem.")
+                        exibe("[yellow]Pescadores:[/] Entendido, boa viagem.")
             case _:
                 pass
         return
     elif lugar == "floresta":
-        print(f"{principal.nome} avista um aventureiro com uma cara de confuso assustadora.\nDeseja se aproximar?")
-        resp = input("[1]Sim\n[2]Não\n")
+        exibe(f"{principal.nome} avista um aventureiro com uma cara de confuso assustadora.\nDeseja se aproximar?"
+              f"\n[1]Sim\n[2]Não\n", obj=principal)
+        resp = input()
         match resp:
             case "1":
-                print("[yellow]Aventureiro:[/] Que bom ver um rosto humano após tanto tempo...")
+                exibe("[yellow]Aventureiro:[/] Que bom ver um rosto humano após tanto tempo...")
                 while True:
-                    print("Por favor companheiro, diga me por qual caminho você entrou na Floresta?")
-                    resp = input("[1]Apontar Direção\n[2]Perguntar o que aconteceu.\n")
+                    exibe("Por favor companheiro, diga me por qual caminho você entrou na Floresta?"
+                          "\n[1]Apontar Direção\n[2]Perguntar o que aconteceu.\n")
+                    resp = input()
                     if resp == "1":
                         break
                     else:
-                        print("Não me lembro, tudo que eu me lembro é daquele [red]tenebroso assobio[/]")
+                        exibe("Não sei. Tudo que eu me lembro é daquele [red]tenebroso assobio[/]")
                         continue
 
             case _:
                 pass
         return
     else:
-        print(f"Assim que {principal.nome} vira mais uma esquina do labirinto, se depara com um homem mascarado.")
+        exibe(f"Assim que {principal.nome} vira mais uma esquina do labirinto, se depara com um homem mascarado.", obj=principal)
         enter()
-        print("[yellow]Mascarado: [/]Ainda bem que você chegou!\nVamos, me dê logo o que combinamos com a realeza.")
-        input("[1]Não sei do que está falando\n[2]Putz! Devo ter deixado cair no caminho.\n")
-        print("[red]Como assim!?[/] Você é de fato um subordinado do Herold? Me diga o código que ele te mandou dizer:\n")
-        input("Código: ")
-        print("[red]Certo..[/] ignore tudo que aconteceu tá bom garoto? Só finja que nunca me viu..."
-              "\n [red]Mascarado vira uma esquerda do labirinto e desaparece.[red]")
+        exibe("[yellow]Mascarado: [/]Ainda bem que você chegou!\nVamos, me dê logo o que combinamos com a realeza.\n"
+              "[1]Não sei do que está falando\n[2]Putz! Devo ter deixado cair no caminho.\n")
+        input()
+        exibe("[red]Como assim!?[/] Você é de fato um subordinado do Herold? Me diga o código que ele te mandou dizer:\nCódigo: \n")
+        input()
+        exibe("[red]Certo..[/] ignore tudo que aconteceu tá bom garoto? Só finja que nunca me viu..."
+              "\n [red]Mascarado vira uma esquerda do labirinto e desaparece.[/]")
         return
 
 
 def item_aleatorio(principal, lugar):
     sorteado = randint(0,2)
     if lugar == "lago":
-        print(f"{principal.nome} [yellow]avista um bote abandonado[/] vindo em sua direção. Ao vasculhar", end= "")
+        exibe(f"{principal.nome} [yellow]avista um bote abandonado[/] vindo em sua direção. Ao vasculhar", obj=principal)
     elif lugar == "floresta":
-        print(f"{principal.nome} [yellow]Encontra uma bolsa[/] velha jogada perto de uma arvóre. Ao verificar ", end="")
+        exibe(f"{principal.nome} [yellow]Encontra uma bolsa[/]"
+              f" velha jogada perto de uma arvóre. Ao verificar ", obj=principal)
     else:
-        print(f"{principal.nome} [yellow]encontra um báu[/]. Ao verificar ", end = "")
+        exibe(f"{principal.nome} [yellow]encontra um báu[/]. Ao verificar ", obj=principal)
 
     match sorteado:
         case 0:
             quant = randint(2, 6)
-            print(f"{principal.nome} encontra [bright_yellow]{quant} moedas de ouro[/] e guarda em sua bolsa")
+            exibe(f"{principal.nome} encontra [bright_yellow]{quant} moedas de ouro[/] e guarda em sua bolsa"
+                  , obj=principal, secundario=quant)
             principal.dinheiro += quant
         case 1:
             item = list(principal.inventario.keys())[1]
-            print(f"{principal.nome} encontra [magenta] 2 {item}[/] e guarda em sua bolsa")
+            exibe(f"{principal.nome} encontra [magenta] 2 {item}[/] e guarda em sua bolsa", obj=principal,
+                  secundario=item)
             principal.inventario[item] += 2
         case _:
-            print(f"{principal.nome} encontra [bright_yellow]um caderno de anotações[/], Deseja ler?")
-            resp = input("[1] Sim\n[2] Não")
+            exibe(f"{principal.nome} encontra [bright_yellow]um caderno de anotações[/]"
+                  f", Deseja ler?\n[1] Sim\n[2] Não", obj=principal)
+            resp = input()
             match resp:
                 case "1":
-                    print("O cader no de anotações está com diversas folhas rasgadas. As poucas restantes dizem:\n"
+                    exibe("O cader no de anotações está com diversas folhas rasgadas. As poucas restantes dizem:\n"
                           "...Esses caras são [red]insanos[/]. Tive que rasgar a maioria das folhas do meu diário para"
                           "não descobrirem. Eles pretendem dominar o mundo com a [bright_magenta]EPI[/]."
                           f"Estão pensando até em colocar algum tipo de [red]Guardião[/] nesse lugar!"
                           f"Se alguém encontrar esse diário, [red]fuja imediatamente desse lugar[/].")
                 case _:
-                    print(f"{principal.nome} devolve o caderno de anotações e continua sua aventura.")
+                    exibe(f"{principal.nome} devolve o caderno de anotações e continua sua aventura.", obj=principal)
 
 def nada_acontece(principal, lugar):
     if lugar == "lago":
-        print(f"{principal.nome} [yellow]avista um bote abandonado[/] vindo em sua direção. Deseja verificar se encontra algo?\n"
-                     f"[1] Sim\n[2] Não\n")
+        exibe(f"{principal.nome} [yellow]avista um bote abandonado[/] vindo em sua direção. Deseja verificar se encontra algo?\n"
+                     f"[1] Sim\n[2] Não\n", obj=principal)
         input()
-        print(f"{principal.nome} Não encontra nada no bote.")
+        exibe(f"{principal.nome} Não encontra nada no bote.", obj=principal)
     elif lugar == "floresta":
-        print(f"{principal.nome} [yellow]Encontra uma bolsa[/] velha jogada perto de uma arvóre. Deseja verificar se encontra algo?\n"
-              f"[1] Sim\n[2] Não\n")
+        exibe(f"{principal.nome} [yellow]Encontra uma bolsa[/] velha jogada perto de uma arvóre. Deseja verificar se encontra algo?\n"
+              f"[1] Sim\n[2] Não\n", obj=principal)
         input()
-        print(f"{principal.nome} Não encontra nada na bolsa.")
+        exibe(f"{principal.nome} Não encontra nada na bolsa.", obj=principal)
     elif lugar == "caverna":
-        print(f"{principal.nome} [yellow]encontra um báu[/]. Deseja verificar se encontra algo?\n"
-              f"[1] Sim\n[2] Não\n")
+        exibe(f"{principal.nome} [yellow]encontra um báu[/]. Deseja verificar se encontra algo?\n"
+              f"[1] Sim\n[2] Não\n", obj=principal)
         input()
-        print(f"{principal.nome} Não encontra nada no baú.")
+        exibe(f"{principal.nome} Não encontra nada no baú.", obj=principal)
     else:
         print("erro")
         pass
@@ -300,8 +332,9 @@ def combate(principal, inimigo):
             for efeito in principal.efeitos:
                 efeito.aplicar(principal, inimigo)
             fugir = turno_jogador(principal, inimigo)
-            principal.atualizar_efeito()
-            if principal.vida == 0 or inimigo.vida == 0:
+            if inimigo.vida > 0:
+                principal.atualizar_efeito()
+            if principal.vida <= 0 or inimigo.vida <= 0:
                 return True
 
             if fugir == True:
@@ -311,16 +344,19 @@ def combate(principal, inimigo):
                     efeito.aplicar(inimigo, principal)
 
                 turno_inimigo(principal, inimigo)
-                inimigo.atualizar_efeito()
-                if principal.vida == 0 or inimigo.vida == 0:
+                if principal.vida > 0:
+                    inimigo.atualizar_efeito()
+                if principal.vida <= 0 or inimigo.vida <= 0:
                     return False
+            enter()
 
 
 def turno_jogador(principal, inimigo):
     limpa()
-    print(f"\nO que deseja fazer?")
-    print(
-        "[bright_white][1][/]Atacar\n[bright_white][2][/]Defender\n[bright_white][3][/]Usar Item\n[bright_white][4][/]Fugir")
+    exibe(f"\nO que deseja fazer?")
+    exibe(
+        "[bright_white][1][/]Atacar\n[bright_white][2][/]Defender\n[bright_white][3][/]Usar Item\n[bright_white][4]"
+        "[/]Fugir", time=0.02)
     resp = int(input())
     match resp:
         case 1:
@@ -335,7 +371,6 @@ def turno_jogador(principal, inimigo):
             raise PermissionError("Deu algum erro")
     try:
         if principal.dragao != None:
-            print("ENTROU!!!!!!!!!!!!!")
             principal.dragao.decida(principal, inimigo)
     except:
         pass
@@ -347,76 +382,80 @@ def turno_inimigo(principal, inimigo):
 
     match decisao:#talvez fazer um defender depois
         case 0:#atacar
+            if inimigo.carrega >= 100:
+                inimigo.hability(principal)
+                inimigo.carrega = 0
             dmg = inimigo.atacar(principal)
             inimigo.carrega += 15
 
-            print(f"{principal.nome} recebeu [red]{dmg}[/] de dano")
+            exibe(f"{principal.nome} recebeu [red]{dmg}[/] de dano", obj=principal, secundario=dmg)
+            return dmg
         case 1:#curar
             inimigo.curar()
+            return
         case _:
             print("opção errada")
 
-    if inimigo.carrega >= 100:
-        inimigo.hability(principal)
 
-
-
-    return
 
 def atacar(principal, inimigo):
-    print("Ataques Disponiveis:")
+    conteudo = "[0] Sair\n"
     for i in range(len(principal.ataques.keys())):
-        print(f"[bright_white]{[i+1]}[/] {list(principal.ataques.keys())[i]}")
-        if principal.carrega >= 100:
-            print(f"[{len(principal.ataques) + 1}]Habilidade Está Carregada!")
+        conteudo += f"[bright_white]{[i+1]}[/] {list(principal.ataques.keys())[i]}\n"
 
-    resp = int(input("[0] Sair\n"))
+    exibe(f"Ataques Disponiveis:\n{conteudo}", time=0.03)
+    if principal.carrega >= 100:
+        exibe(f"[{len(principal.ataques) + 1}]Habilidade Está Carregada!\n", obj=principal)
+
+    resp = int(input())
     if resp == 0:
         return
 
-    if resp == len(principal.ataques) + 1:
+
+    if resp == len(principal.ataques) + 1 and principal.carrega >= 100:
         principal.hability(inimigo)
+        principal.carrega = 0
         return
 
     if list(principal.ataques.keys())[resp-1] != "Esquiva":
-        print(f"inimigo recebeu {dano(principal, inimigo)} de dano.")
-        principal.carrega += 15
-        #print(f"barra{principal.carrega}")
+        dmg = dano(principal, inimigo)
+        exibe(f"inimigo recebeu {dmg} de dano.", dmg)
+        principal.carrega += 50
 
     return
 
 def dano(principal, vitima):
-    vitima.vida -= principal.dano - principal.dano * vitima.defesa / 100
-    return principal.dano - principal.dano * vitima.defesa / 100
+    vitima.vida -= principal.danobase - principal.danobase * vitima.defesa / 100
+    return principal.danobase - principal.danobase * vitima.defesa / 100
 
 def defender(principal, inimigo):
-    dano = inimigo.atacar(principal)
-    dano -= dano * (randint(8,principal.defesa) / 75)
+    principal.defesa += principal.defesa * 0.20
 
-    print(f"{principal.nome} defendeu o dano parcialmente!")
-    print(f"Dano Recebido: {int(dano)}")
-
+    exibe(f"{principal.nome} defenderá o dano parcialmente! [blue](defesa aumentada em 20%)[/]")
     return
 
 
 def inventario(principal):
     limpa()
     cont = 1
+    conteudo = ""
     for i, k in principal.inventario.items():
-        print(f"\n[[bright_white]{cont}[/]]{i}: {k}\n")
+        conteudo += f"\n[[bright_white]{cont}[/]]{i}: {k}\n"
         cont += 1
-    print("[[bright_white]0[/]]Sair")
+    conteudo += "[0]Sair\nDeseja usar qual item?\n"
+    exibe(conteudo)
 
-    resp = int(input("Deseja usar qual item?\n"))
+    resp = int(input())
     match resp:
         case 1:
             limpa()
             principal.mapa()
         case 2:
-            print(principal.vida)
-            print(principal.curar())
-            print(principal.vida)
-
+            if list(principal.inventario.values())[1] > 0:
+                exibe(str(principal.curar()), principal)
+                principal.inventario[list(principal.inventario.keys())[1]] -= 1
+            else:
+                pass
 
     return
 #classe de personagens principais
@@ -434,28 +473,20 @@ class Personagem(ABC):
         self.efeitos = []
         self.dinheiro = 0
 
-    @property
-    def dano(self):
-        dano = self.danobase
-        try:
-            for efeito in self.efeitos:
-                dano = efeito.aplicar(dano)
-        except:
-            pass
-        return dano
-
     def mapa(self):
-        print(
+        exibe(
             f"\nLAGO DO ESQUECIMENTO{' '*8}FLORESTA DA PERDIÇÃO{' '*8}CAVERNA LABIRÍNTICA\n"
             f"[bright_white]{' '*21} {chr(92)}{' '*15}|{' '*17}/[/]\n\n"
             f"{' '* 32}VILA INICIAL"
-        )
+        , time=0)
         enter()
         return
 
     def curar(self):
-        self.vida += 20
-        return f"{self.nome} usou {list(self.inventario.keys())[1]} e recuperou 20 pontos de vida."
+        if self.vida < 100:
+            self.vida += 20
+            return f"{self.nome} usou {list(self.inventario.keys())[1]} e recuperou 20 pontos de vida."
+        else:return f"Vida no maximo"
 
 
     @abstractmethod
@@ -482,26 +513,28 @@ class Cavaleiro(Personagem):
         super().__init__(nome, defesa, danobase)
         self.vida = 100
         self.equipamentos = {"Espada": "descrição", "Escudo":"descrição"}
-        self.ataques = {"Ataque Com Espada": 30, "Aparo": 30, "Esquiva": 30}
-        self.habilidades = {"Ataque Pesado":20, "Bloqueio Com Escudo":0}
+        self.ataques = {"Ataque Com Espada": self.danobase*0.8, "Aparo": self.danobase*0.8, "Esquiva": self.danobase*0}
+        self.habilidades = {"Ataque Pesado":"descrição", "Bloqueio Com Escudo":"descrição"}
         self.inventario = {"Mapa":1, "Ataduras":2}
 
 
     def hability(self, inimigo):
+        conteudo = ""
         for i, k in enumerate(self.habilidades.keys()):
-            print(f"[[bright_white]{i + 1}[/]]{k}")
-        print("[[bright_white]0[/]]Sair")
-        atk = int(input("Qual habilidade especial deseja usar?"))
+            conteudo += f"[[bright_white]{i + 1}[/]]{k}"
+        conteudo += "[0]Sair\nQual habilidade especial deseja usar?\n"
+        exibe(conteudo)
+        atk = int(input())
 
-        print(f"Habilidade Escolhida: {list(self.habilidades.keys())[atk - 1]}")
+        exibe(f"Habilidade Escolhida: {list(self.habilidades.keys())[atk - 1]}", self)
         if atk == 1:
             inimigo.vida -= 40
 
-            print("Habilidade escolhida: [red]Ataque Pesado[/]")
-            print(f"{inimigo.vida} recebeu 40 de Dano --talvez receber atributo tonto--")
+            exibe("Habilidade escolhida: [red]Ataque Pesado[/]")
+            exibe(f"{inimigo.vida} recebeu 40 de Dano --talvez receber atributo tonto--", inimigo)
             inimigo.efeitos.append(Atordoado(3))
         elif atk == 2:
-            print("Habilidade Escohida: [red]Bloqueio com Escudo[/]--pelas proximas 3 rodadas a defesa é aumentada em 30%")
+            exibe("Habilidade Escohida: [red]Bloqueio com Escudo[/]--pelas proximas 3 rodadas a defesa é aumentada em 30%")
             self.defesa *= 1.3
             self.efeitos.append(Defensor(3))
         return
@@ -510,36 +543,37 @@ class Cavaleiro(Personagem):
 class Mago(Personagem):
     def __init__(self, nome, defesa, danobase):
         super().__init__(nome, defesa, danobase)
-        self.vida = 70
+        self.vida = 100
         self.equipamentos = {"Livro de Feitiços":"descrição", "Cajado Mágico":"descrição",}
-        self.ataques = {"Ataque Com Cajado":30, "Bola de Fogo":30, "Teletransporte":10}
-        self.habilidades = {"Tempestade de Relâmpagos": 10, "Invocação Amiga": 10}
+        self.ataques = {"Ataque Com Cajado":0.7, "Bola de Fogo":self.danobase * 0.8, "Teletransporte":self.danobase * 0}
+        self.habilidades = {"Tempestade de Relâmpagos": "descrição", "Invocação Amiga": "descrição"}
         self.inventario = {"Mapa":1, "Poções de cura":2}
         self.dragao = None
 
     def hability(self, inimigo):
+        conteudo = ""
         for i, k in enumerate(self.habilidades.keys()):
-            print(f"[[bright_white]{i + 1}[/]]{k}")
-        print("[[bright_white]0[/]]Sair")
-        atk = int(input("Qual habilidade especial deseja usar?"))
+            conteudo += f"[[bright_white]{i + 1}[/]]{k}"
+        conteudo += "[0]Sair\nQual habilidade especial deseja usar?\n"
+        exibe(conteudo)
+        atk = int(input())
 
-        print(f"Habilidade Escolhida: {list(self.habilidades.keys())[atk-1]}")
+        exibe(f"Habilidade Escolhida: {list(self.habilidades.keys())[atk-1]}", self)
         if atk == 1:
             inimigo.vida -= 40
 
-            print(f"{self.nome} Núvens negras cobrem o céu..\nDiversos relâmpagos de repente caem sobre{inimigo.nome}"
-                  f"{inimigo.nome} Recebe 40 de dano e ficará paralizado")
+            exibe(f"{self.nome} Núvens negras cobrem o céu..\nDiversos relâmpagos de repente caem sobre{inimigo.nome}"
+                  f"{inimigo.nome} Recebe 40 de dano e ficará paralizado", self, inimigo)
             inimigo.efeitos.append(Paralizado(2))
         if atk == 2:
             self.ctrlinvoc()
-            print("bixo foi invocado. por 2 rodadas principal.nome terá ajuda do seu bixo invocado. podendo curar ou atacar"
+            exibe("bixo foi invocado. por 2 rodadas principal.nome terá ajuda do seu bixo invocado. podendo curar ou atacar"
                   "o inimigo")
             return
 
     def ctrlinvoc(self):
         if self.dragao == None:
             self.dragao = Dragao()
-            print("Criou memo pae")
         return
 
 class Dragao:
@@ -549,7 +583,6 @@ class Dragao:
         self.ataques = {"bola de fogo": 10, "Chicote de Cauda":20, "Dentada violenta":20}
 
     def decida(self, principal, inimigo):
-        print("ENTROU?????????????")
         sorteado = randint(0,1)
         match sorteado:
             case 1:
@@ -562,8 +595,8 @@ class Dragao:
         sorteado = randint(0,2)
         inimigo.vida -= list(self.ataques.values())[sorteado]
 
-        print(f"{self.nome} usou o ataque {list(self.ataques.keys())[sorteado]}")
-        print(f"{inimigo.nome} recebeu {list(self.ataques.values())[sorteado]} de dano")
+        exibe(f"{self.nome} usou o ataque {list(self.ataques.keys())[sorteado]}", self, sorteado)
+        exibe(f"{inimigo.nome} recebeu {list(self.ataques.values())[sorteado]} de dano", self, inimigo, sorteado)
         self.turnos_restantes -= 1
         if self.turnos_restantes == 0:
             principal.dragao = None
@@ -573,7 +606,7 @@ class Dragao:
         sorteado = randint(20, 40)
         principal.vida += sorteado
 
-        print(f"{principal.vida} recebeu {sorteado} pontos de vida")
+        exibe(f"{principal.vida} recebeu {sorteado} pontos de vida", principal, sorteado)
         self.turnos_restantes -= 1
         if self.turnos_restantes == 0:
             principal.dragao = None
@@ -584,25 +617,27 @@ class Mercenario(Personagem):
         super().__init__(nome, defesa, danobase)
         self.vida = 100
         self.equipamentos = {"Adagas":"descrição",  "Facas arremessaveis":"descrição"}
-        self.ataques = {"Ataque Com Adaga": 10, "Chute Giratório":5, "Arremessar Faca":7}
-        self.habilidades = {"Investida Vorpal":30, "Filho da luz":0}
+        self.ataques = {"Ataque Com Adaga": self.danobase * 0.8, "Arremessar Faca":self.danobase * 0.8, "Esquiva": self.danobase * 0}
+        self.habilidades = {"Investida Vorpal":"descrição", "Filho da luz":"descrição"}
         self.inventario = {"Mapa":1, "Ataduras":2}
 
 
     def hability(self, inimigo):
+        conteudo = ""
         for i, k in enumerate(self.habilidades.keys()):
-            print(f"[[bright_white]{i + 1}[/]]{k}")
-        print("[[bright_white]0[/]]Sair")
-        atk = int(input("Qual habilidade especial deseja usar?"))
+            conteudo += f"[[bright_white]{i + 1}[/]]{k}"
+        conteudo += "[0]Sair\nQual habilidade especial deseja usar?\n"
+        exibe(conteudo)
+        atk = int(input())
 
-        print(f"Habilidade Escolhida: {list(self.habilidades.keys())[atk - 1]}")
+        exibe(f"Habilidade Escolhida: {list(self.habilidades.keys())[atk - 1]}", self)
         if atk == 1:
             inimigo.vida -= 40
-            print(f"{self.nome} se aproxima rapidamente de inimigo e aplica diversos golpes de uma vez\n"
-                  f"inimigo fica atordoado--talvez fique atordoado--")
+            exibe(f"{self.nome} se aproxima rapidamente de inimigo e aplica diversos golpes de uma vez\n"
+                  f"inimigo fica atordoado--talvez fique atordoado--", self)
             inimigo.efeitos.append(Atordoado(2))
         if atk == 2:
-            print("self.nome fica muito rapido. podera fazer 2 açoes no proximo turno")
+            exibe("self.nome fica muito rapido. podera fazer 2 açoes no proximo turno")
             self.efeitos.append(Luz(1))#esse 1 é a quantidade de turnos a mais
 
         return
@@ -619,16 +654,6 @@ class Inimigos(ABC):
         self.habilidades = {}
         self.carrega = 0
         self.efeitos = []
-
-    @property
-    def dano(self):
-        dano = self.danobase
-        try:
-            for efeito in self.efeitos:
-                dano = efeito.aplicar(dano)
-        except:
-            pass
-        return dano
 
     @abstractmethod
     def curar(self):
@@ -665,25 +690,25 @@ class Minotauro(Inimigos):
     def atacar(self, inimigo):
         sorteado = randint(0, 2)
 
-        print(f"Minotauro escolheu {list(self.ataques.keys())[sorteado]}")
+        exibe(f"Minotauro escolheu {list(self.ataques.keys())[sorteado]}", self, sorteado)
         dmg = dano(self, inimigo)
         return dmg
 
     def curar(self):
         sorteado = randint(20, 30)
-        self.vida = sorteado
-        print(f"Minotauro recuperou {sorteado} pontos de vida")
+        self.vida += sorteado
+        exibe(f"Minotauro recuperou {sorteado} pontos de vida", sorteado)
 
         return
 
     def hability(self, principal):
         sorteado = randint(0,1)
-        print(f"Habilidade Escolhida: {list(self.habilidades.keys())[sorteado]}")
+        exibe(f"Habilidade Escolhida: {list(self.habilidades.keys())[sorteado]}", self, sorteado)
         if sorteado == 0:
-            print("Minotauro se preprara para chifrar..")
+            exibe("Minotauro se preprara para chifrar..")
             principal.efeitos.append(Atordoado(2))
         if sorteado == 1:
-            print("Minotauro solta um grito ensurdecedor")
+            exibe("Minotauro solta um grito ensurdecedor")
             self.efeitos.append(Furia(3))
         return
 
@@ -700,27 +725,27 @@ class Curupira(Inimigos):
     def atacar(self, inimigo):
         sorteado = randint(0, 2)
 
-        print(f"Curupira escolheu {list(self.ataques.keys())[sorteado]}")
+        exibe(f"Curupira escolheu {list(self.ataques.keys())[sorteado]}", self, sorteado)
         dmg = dano(self, inimigo)
         return dmg
 
     def curar(self):
         sorteado = randint(20, 30)
-        self.vida = sorteado
-        print(f"Curupira recuperou {sorteado} pontos de vida")
+        self.vida += sorteado
+        exibe(f"Curupira recuperou {sorteado} pontos de vida", sorteado)
 
         return
 
     def hability(self, principal):
         sorteado = randint(0,1)
-        print(f"Habilidade Escolhida: {list(self.habilidades.keys())[sorteado]}")
+        exibe(f"Habilidade Escolhida: {list(self.habilidades.keys())[sorteado]}", self, sorteado)
         if sorteado == 0:
-            print("Curupira toca o berrante e chama uma enxurrada de animais")
+            exibe("Curupira toca o berrante e chama uma enxurrada de animais")
             principal.vida -= 40
             principal.efeitos.append(Atordoado(2))
         if sorteado == 1:
-            print("De repente, você começa a ouvir um assobio hipnotizante..")
-            print(f"{principal.nome} está preso na ilusão de curupira")
+            exibe("De repente, você começa a ouvir um assobio hipnotizante..")
+            exibe(f"{principal.nome} está preso na ilusão de curupira", principal)
             principal.efeitos.append(Perdido())
         return
 
@@ -733,30 +758,29 @@ class Nessie(Inimigos):
         #e o do principal muito mais fracos
 
     def atacar(self, inimigo):
-        print(self.__dict__)
         sorteado = randint(0, 2)
 
-        print(f"Nessie escolheu {list(self.ataques.keys())[sorteado]}")
+        exibe(f"Nessie escolheu {list(self.ataques.keys())[sorteado]}", self, sorteado)
         dmg = dano(self, inimigo)
         return dmg
 
     def curar(self):
         sorteado = randint(20, 30)
-        self.vida = sorteado
-        print(f"Minotauro recuperou {sorteado} pontos de vida")
+        self.vida += sorteado
+        exibe(f"Nessie recuperou {sorteado} pontos de vida", sorteado)
 
         return
 
     def hability(self, principal):
-        sorteado = 1
-        print(f"Habilidade Escolhida: {list(self.habilidades.keys())[sorteado]}")
+        sorteado = randint(0,1)
+        exibe(f"Habilidade Escolhida: {list(self.habilidades.keys())[sorteado]}", self, sorteado)
         if sorteado == 0:
-            print(f"Nissie prepara um jato de água compressurizada e atira na direção de {principal.nome}")
+            exibe(f"Nissie prepara um jato de água compressurizada e atira na direção de {principal.nome}", principal)
             principal.vida -= 40
             principal.efeitos.append(Atordoado(2))
         if sorteado == 1:
-            print("Nissie te abocanha e num rapido movimento tenta te levar para debaixo da água")
-            print(f"[blue]Debaixo da água Nissie tem aumento de ataque e cura[/]")
+            exibe("Nissie te abocanha e num rapido movimento tenta te levar para debaixo da água")
+            exibe(f"[blue]Debaixo da água Nissie tem aumento de ataque e cura[/]")
             self.efeitos.append(Territorio(3))
         return
 
@@ -771,7 +795,7 @@ class Defensor(Efeitos):
     def __init__(self, duracao):
         super().__init__("Defensor", duracao, "Buff")
 
-    def aplicar(self, afetado):
+    def aplicar(self, afetado, dscrt=None):
         if self.duracao == 1:
             afetado.defesa /= 1.3
 
@@ -829,13 +853,13 @@ class Paralizado(Efeitos):
         super().__init__("Paralizado", duracao, "Debuff")
 
     def aplicar(self, principal = None, inimigo = None):
-        for i in range(randint(0,1)):
+        for i in range(randint(1,2)):
             print(f"{inimigo.nome} está atordoado")
             turno_jogador(principal, inimigo)
 
 class Perdido(Efeitos):
     def __init__(self):
-        super().__init__("Lost", 4, "Debuff")
+        super().__init__("Lost", 3, "Debuff")
 
     def aplicar(self, personagem = None, inimigo = None):
         while True:
@@ -852,4 +876,6 @@ class Perdido(Efeitos):
             turno_inimigo(personagem, inimigo)
 
 cav = Cavaleiro("ricardo", 30, 30)
-vila_inicial(cav)
+enemy = Minotauro()
+
+combate(cav, enemy)

@@ -138,18 +138,23 @@ def vila_inicial(principal):
                 continue
 
 def lago_do_esquecimento(principal):
-    # evento aleatorio:Item, NPC, Historia
-    print(f"Você se vê sozinho em um imenso lago...\n{principal.nome} olha para baixo e percebe que é como se"
+    evento_aleatorio(principal, "lago")
+
+    print(f"Você se vê sozinho em um imenso e denso lago...\n{principal.nome} olha para baixo e percebe que é como se"
           f"algo enorme estivesse se movimentando no fundo do lago.Causando uma enorme sombra por onde passa."
           f"{principal.nome} ainda pensa em voltar, mas antes mesmo de qualquer possível reação.."
           f"\n[red]O Monstro Do Lago Aparece:[/] [blue]NESSIE[/]")
 
     enter()
-    combate(principal, Nessie())
+    if combate(principal, Nessie()):
+        print("Após derrotar Nissie, a densidade do lago desaparece e você consegue ver que no fundo"
+              "do profundo lago, parece ter algo como um laboratório.\n")
+        #talvez adquirir um item
 
 
 def floresta_da_perdicao(principal):
-    # evento aleatorio:Item, NPC, Historia
+    evento_aleatorio(principal, "floresta")
+
     print("De repente, em meio a densa floresta..\nVocê começa a ouvir [red]longos assobios..[/]\n"
           f"{principal.nome} vai ficando cada vez mais zonzo e [red]perdido...[/]\n"
           f"Quando se da conta, você está totalmente perdido. No coração da floresta, Diante do que se parece"
@@ -158,10 +163,11 @@ def floresta_da_perdicao(principal):
 
     enter()
     combate(principal, Curupira())
+    # talvez adquirir um item
 
 def caverna_labirintica(principal):
     while True:
-        #evento aleatorio:Item, NPC, Historia
+        evento_aleatorio(principal, "caverna")
         print("Você encontra uma figura estranha. Algo como um [red]urso com chifres[/]"
               " aparentemente dormindo...\nDeseja se aproximar?\n[1]Sim\n[2]Não\n")
 
@@ -176,7 +182,117 @@ def caverna_labirintica(principal):
     print("[red]MINOTAURO Acorda..[/]")
     enter()
     combate(principal, Minotauro())
+    # talvez adquirir um item
 
+def evento_aleatorio(principal, lugar):
+    sorteado = randint(0,2)
+
+    match sorteado:
+        case 0:
+            npc(principal, lugar)
+        case 1:
+            item_aleatorio(principal, lugar)
+        case _:
+            nada_acontece(principal, lugar)
+
+def npc(principal, lugar):
+    if lugar == "lago":
+        print(f"{principal.nome} avista um grupo de pescadores\nDeseja se aproximar?")
+        resp = input("[1]Sim\n[2]Não\n")
+        match resp:
+            case "1":
+                print(f"[yellow]Pescadores:[/] O que está fazendo aqui?\n[blue]{principal.nome}:[/]")
+                resp = input(f"[1]Apenas de passagem...\n[2]Não é da sua conta\n")
+                match resp:
+                    case "1":
+                        print("[yellow]Pescadores:[/] Normalmente ninguém vem aqui. Até o número de pescadores diminui"
+                              "depois que os peixes começaram a morrer de forma misteriosa. Deve ser"
+                              "o [red]Monstro do lago ness[/] que ronda essa região. Tome cuidado amigo...")
+                    case _:
+                        print("[yellow]Pescadores:[/] Entendido, boa viagem.")
+            case _:
+                pass
+        return
+    elif lugar == "floresta":
+        print(f"{principal.nome} avista um aventureiro com uma cara de confuso assustadora.\nDeseja se aproximar?")
+        resp = input("[1]Sim\n[2]Não\n")
+        match resp:
+            case "1":
+                print("[yellow]Aventureiro:[/] Que bom ver um rosto humano após tanto tempo...")
+                while True:
+                    print("Por favor companheiro, diga me por qual caminho você entrou na Floresta?")
+                    resp = input("[1]Apontar Direção\n[2]Perguntar o que aconteceu.\n")
+                    if resp == "1":
+                        break
+                    else:
+                        print("Não me lembro, tudo que eu me lembro é daquele [red]tenebroso assobio[/]")
+                        continue
+
+            case _:
+                pass
+        return
+    else:
+        print(f"Assim que {principal.nome} vira mais uma esquina do labirinto, se depara com um homem mascarado.")
+        enter()
+        print("[yellow]Mascarado: [/]Ainda bem que você chegou!\nVamos, me dê logo o que combinamos com a realeza.")
+        input("[1]Não sei do que está falando\n[2]Putz! Devo ter deixado cair no caminho.\n")
+        print("[red]Como assim!?[/] Você é de fato um subordinado do Herold? Me diga o código que ele te mandou dizer:\n")
+        input("Código: ")
+        print("[red]Certo..[/] ignore tudo que aconteceu tá bom garoto? Só finja que nunca me viu..."
+              "\n [red]Mascarado vira uma esquerda do labirinto e desaparece.[red]")
+        return
+
+
+def item_aleatorio(principal, lugar):
+    sorteado = randint(0,2)
+    if lugar == "lago":
+        print(f"{principal.nome} [yellow]avista um bote abandonado[/] vindo em sua direção. Ao vasculhar", end= "")
+    elif lugar == "floresta":
+        print(f"{principal.nome} [yellow]Encontra uma bolsa[/] velha jogada perto de uma arvóre. Ao verificar ", end="")
+    else:
+        print(f"{principal.nome} [yellow]encontra um báu[/]. Ao verificar ", end = "")
+
+    match sorteado:
+        case 0:
+            quant = randint(2, 6)
+            print(f"{principal.nome} encontra [bright_yellow]{quant} moedas de ouro[/] e guarda em sua bolsa")
+            principal.dinheiro += quant
+        case 1:
+            item = list(principal.inventario.keys())[1]
+            print(f"{principal.nome} encontra [magenta] 2 {item}[/] e guarda em sua bolsa")
+            principal.inventario[item] += 2
+        case _:
+            print(f"{principal.nome} encontra [bright_yellow]um caderno de anotações[/], Deseja ler?")
+            resp = input("[1] Sim\n[2] Não")
+            match resp:
+                case "1":
+                    print("O cader no de anotações está com diversas folhas rasgadas. As poucas restantes dizem:\n"
+                          "...Esses caras são [red]insanos[/]. Tive que rasgar a maioria das folhas do meu diário para"
+                          "não descobrirem. Eles pretendem dominar o mundo com a [bright_magenta]EPI[/]."
+                          f"Estão pensando até em colocar algum tipo de [red]Guardião[/] nesse lugar!"
+                          f"Se alguém encontrar esse diário, [red]fuja imediatamente desse lugar[/].")
+                case _:
+                    print(f"{principal.nome} devolve o caderno de anotações e continua sua aventura.")
+
+def nada_acontece(principal, lugar):
+    if lugar == "lago":
+        print(f"{principal.nome} [yellow]avista um bote abandonado[/] vindo em sua direção. Deseja verificar se encontra algo?\n"
+                     f"[1] Sim\n[2] Não\n")
+        input()
+        print(f"{principal.nome} Não encontra nada no bote.")
+    elif lugar == "floresta":
+        print(f"{principal.nome} [yellow]Encontra uma bolsa[/] velha jogada perto de uma arvóre. Deseja verificar se encontra algo?\n"
+              f"[1] Sim\n[2] Não\n")
+        input()
+        print(f"{principal.nome} Não encontra nada na bolsa.")
+    elif lugar == "caverna":
+        print(f"{principal.nome} [yellow]encontra um báu[/]. Deseja verificar se encontra algo?\n"
+              f"[1] Sim\n[2] Não\n")
+        input()
+        print(f"{principal.nome} Não encontra nada no baú.")
+    else:
+        print("erro")
+        pass
 
 #Sistema de Combate:
 def combate(principal, inimigo):
@@ -316,6 +432,7 @@ class Personagem(ABC):
         self.inventario = {}
         self.carrega = 0
         self.efeitos = []
+        self.dinheiro = 0
 
     @property
     def dano(self):
@@ -367,7 +484,7 @@ class Cavaleiro(Personagem):
         self.equipamentos = {"Espada": "descrição", "Escudo":"descrição"}
         self.ataques = {"Ataque Com Espada": 30, "Aparo": 30, "Esquiva": 30}
         self.habilidades = {"Ataque Pesado":20, "Bloqueio Com Escudo":0}
-        self.inventario = {"Mapa":"descrição", "Ataduras":"descrição"}
+        self.inventario = {"Mapa":1, "Ataduras":2}
 
 
     def hability(self, inimigo):
@@ -397,7 +514,7 @@ class Mago(Personagem):
         self.equipamentos = {"Livro de Feitiços":"descrição", "Cajado Mágico":"descrição",}
         self.ataques = {"Ataque Com Cajado":30, "Bola de Fogo":30, "Teletransporte":10}
         self.habilidades = {"Tempestade de Relâmpagos": 10, "Invocação Amiga": 10}
-        self.inventario = {"Mapa":"descrição", "Poções":"descrição"}
+        self.inventario = {"Mapa":1, "Poções de cura":2}
         self.dragao = None
 
     def hability(self, inimigo):
@@ -469,7 +586,7 @@ class Mercenario(Personagem):
         self.equipamentos = {"Adagas":"descrição",  "Facas arremessaveis":"descrição"}
         self.ataques = {"Ataque Com Adaga": 10, "Chute Giratório":5, "Arremessar Faca":7}
         self.habilidades = {"Investida Vorpal":30, "Filho da luz":0}
-        self.inventario = {"Mapa":"descrição", "Ataduras":"descrição"}
+        self.inventario = {"Mapa":1, "Ataduras":2}
 
 
     def hability(self, inimigo):

@@ -379,8 +379,10 @@ def combate(principal, inimigo):
                 for efeito in inimigo.efeitos:
                     efeito.aplicar(inimigo, principal)
 
-
+                
                 turno_inimigo(principal, inimigo)
+                if fugir == "reset_escudo":
+                    principal.atualiza_defesa()
                 enter()
                 if principal.vida > 0:
                     inimigo.atualizar_efeito()
@@ -410,10 +412,10 @@ def turno_jogador(principal, inimigo):
                         continue
                     elif resultado == "esquiva":
                         return "esquiva"
-                    break
+                    return False
                 case 2:
                     defender(principal, inimigo)
-                    break
+                    return "reset_escudo"
                 case 3:
                     if inventario(principal, inimigo) == "cancel":
                         continue
@@ -438,17 +440,17 @@ def turno_inimigo(principal, inimigo):
             if inimigo.carrega >= 100:
                 inimigo.hability(principal)
                 inimigo.carrega = 0
+                return
             dmg = inimigo.atacar(principal)
             inimigo.carrega += 50
 
             exibe(f"[blue]{principal.nome}[/] recebeu [red]{dmg}[/] de dano", obj=principal, secundario=dmg)
-            return dmg
+            return
         case 1:#curar
             inimigo.curar()
             return
         case _:
             print("opção errada")
-    return
 
 def atacar(principal, inimigo):
     limpa()
@@ -516,7 +518,6 @@ def defender(principal, inimigo):
     principal.defesa += principal.defesa * 0.20
 
     exibe(f"{principal.nome} defenderá o dano parcialmente! [blue](defesa aumentada em 20%)[/]")
-    return
 
 
 def inventario(principal, inimigo):
@@ -559,6 +560,7 @@ class Personagem(ABC):
     def __init__(self, nome, defesa, danobase):
         self.nome = nome
         self.vida = 100
+        self.defesabase = defesa
         self.defesa = defesa
         self.danobase = danobase
         self.equipamentos = {}
@@ -568,6 +570,9 @@ class Personagem(ABC):
         self.carrega = 0
         self.efeitos = []
         self.dinheiro = 0
+
+    def atualiza_defesa(self):
+        self.defesa = self.defesabase
 
     def mapa(self):
         exibe(
@@ -580,11 +585,14 @@ class Personagem(ABC):
 
     def curar(self, inimigo):
         if self.vida < 100:
+            if self.vida + 20 > 100:
+                self.vida = 100
+                return f"{self.nome} usou {list(self.inventario.keys())[1]} e ficou com 100 de vida"
             self.vida += 20
             return f"{self.nome} usou {list(self.inventario.keys())[1]} e recuperou 20 pontos de vida."
         else:
             print(f"Vida no maximo")
-            turno_jogador(self, inimigo)
+            return "cancel"
 
 
     @abstractmethod
@@ -680,7 +688,7 @@ class Mago(Personagem):
                               f" de repente caem sobre [deep_purple]{inimigo.nome}[/]"
                               f"[red]{inimigo.nome}[/] Recebe [red]40[/] de dano e ficará [red]paralizado[/]", self, inimigo)
                         inimigo.efeitos.append(Paralizado(2))
-                        break
+                        return
                     elif atk == 2:
                         self.ctrlinvoc()
                         exibe("[deep_purple]Bebê Dragão[/] foi invocado! \nEle pode"
@@ -705,7 +713,6 @@ class Dragao:
                 self.atacar(principal, inimigo)
             case 0:
                 self.curar(principal)
-        print(sorteado)
 
     def atacar(self, principal, inimigo):
         sorteado = randint(0,2)
@@ -969,7 +976,6 @@ class Atordoado(Efeitos):#cavaleiro e mercenario
     def aplicar(self,inimigo,dscrt=None):
         #diminuir o dano do inimigo as proximas rodadas
         inimigo.danobase *= 0.6
-        print(inimigo.__dict__)
 
     def atualizar(self, inimigo):
         inimigo.danobase /= 0.6
@@ -978,9 +984,11 @@ class Paralizado(Efeitos):
     def __init__(self, duracao):
         super().__init__("Paralizado", duracao, "Debuff")
 
-    def aplicar(self, principal = None, inimigo = None):
+    def aplicar(self, inimigo = None, principal = None):
         for i in range(randint(1,2)):
-            print(f"{inimigo.nome} está atordoado")
+            exibe(f"{inimigo.nome} está atordoado", inimigo)
+            enter()#TEM QUE MUDAR ISSO. NÃO POSSO EMPILHAR CAMADAS DE TURNOS AQUI EM APLICAR EFEITOS, SENÃO
+            #QUANDO ALGUEM ZERAR A VIDA E DER RETURN ELE VAI TENTAR EXECUTAR O TURNO DO INIMIGO
             turno_jogador(principal, inimigo)
 
 class Perdido(Efeitos):
@@ -1001,6 +1009,7 @@ class Perdido(Efeitos):
                 break
             turno_inimigo(personagem, inimigo)
 
-mer = Mercenario("laion", 30, 25)
-enemy = Curupira()
-combate(mer, enemy)
+mago = Mago("alan", 30 ,30)
+cur = Curupira()
+mago.hability(cur)
+combate(mago, cur)

@@ -141,7 +141,7 @@ def limpa():
 
 def enter():
     while True:
-        print("Pressione 'ENTER' para continuar...")
+        print("Pressione [green][ENTER][/] para continuar...")
         if input() == "":
             break
 
@@ -360,6 +360,9 @@ def combate(principal, inimigo):
         for efeito in principal.efeitos:
             efeito.aplicar(principal, inimigo)
 
+        if principal.vida <= 0:
+            return False
+
         fugir = turno_jogador(principal, inimigo)
         enter()
         if inimigo.vida > 0:
@@ -380,7 +383,7 @@ def combate(principal, inimigo):
 
         if inimigo.vida <= 0:
             exibe("[purple]Bebê Dragão[/] matou o inimigo!")
-            return False
+            return True
 
         if fugir == "esquiva":
             continue
@@ -402,11 +405,11 @@ def combate(principal, inimigo):
                 enter()
                 continue
         except:
-            pass
+            limpa()
         turno_inimigo(principal, inimigo)
+        enter()
         if fugir == "reset_escudo":
             principal.atualiza_defesa()
-        enter()
         if principal.vida > 0:
             inimigo.atualizar_efeito()
         if principal.vida <= 0:
@@ -858,6 +861,8 @@ class Minotauro(Inimigos):
             sorteado = randint(20, 30)
             self.vida += sorteado
             exibe(f"[red]Minotauro[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+        else:
+            exibe("vida no maximo irmaozao")
         return
 
     def hability(self, principal):
@@ -875,10 +880,6 @@ class Curupira(Inimigos):
         super().__init__("Curupira", 45)
         self.ataques = {"Chute Trocado": 30, "Investida Furiosa": 30, "Chicote de Cipó":30}
         self.habilidades = {"Confusão Mental": 35, "Pai Natureza":44}
-        #confusão mental: menos dano, mas a vitima pode ganhar o status, "Lost", perde um turno tentando recobrar
-        #a consciencia de onde está e achar o curupira novamente.
-
-        #rei da floresta: pensei em algo como trazer uma enxurrada de animais para atacar o inimigo
 
     def atacar(self, inimigo):
         sorteado = randint(0, 2)
@@ -891,11 +892,13 @@ class Curupira(Inimigos):
         if self.vida < 100:
             if self.vida + 20 > 100:
                 self.vida = 100
-                exibe(f"{self.nome} usou atingiu a vida maxima (100 de vida)", self)
+                exibe(f"{self.nome} atingiu a vida maxima (100 de vida)", self)
                 return
             sorteado = randint(20, 30)
             self.vida += sorteado
             exibe(f"[red]Curupira[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+        else:
+            exibe("vida no maximo irmaozao")
 
         return
 
@@ -935,7 +938,8 @@ class Nessie(Inimigos):
                 return
             self.vida += self.curabase
             exibe(f"[red]Nessie[/] recuperou [bright_yellow]{self.curabase}[/] pontos de vida", self)
-
+        else:
+            exibe("vida no maximo irmaozao")
         return
 
     def hability(self, principal):
@@ -1028,19 +1032,24 @@ class Perdido(Efeitos):
 
     def aplicar(self, personagem = None, inimigo = None):
         while True:
-            print(f"{personagem.nome} tenta escapar da ilusão..")
-            while True:
-                print("Pressione 'ENTER' para continuar...")
-                if input() == "":
-                    break
+            personagem.vida -= 5
+            exibe(f"{personagem.nome} recebe [red]5 de dano[/] por estar preso na ilusão de Curupira.")
+            enter()
+            exibe(f"{personagem.nome} vai tentar escapar da ilusão..", personagem)
+            sleep(0.8)
 
-            if randint(0,1) == 1:
-                print(f"{personagem.nome} [blue]recobra os sentidos[/]")
-                self.duracao = 0
-                break
+            if personagem.vida <= 0:
+                return
+
+            if self.duracao < 3:
+                if randint(0,1) == 1:
+                    exibe(f"[green]Sucesso![/]{personagem.nome} [blue]recobra os sentidos[/]", personagem)
+                    self.duracao = 0
+                    enter()
+                    return
+            exibe("[red]Fracasso![/] Turno inimigo:")
+            enter()
             turno_inimigo(personagem, inimigo)
+            self.duracao -= 1
 
-mer = Mercenario("Mercenario", 25, 30)
-inimigo = Curupira()
-
-combate(mer, inimigo)
+menuinicial()

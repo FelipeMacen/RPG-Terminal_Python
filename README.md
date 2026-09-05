@@ -8,11 +8,11 @@ Um jogo RPG por texto desenvolvido em Python.
 - Combate por turnos.
 - Habilidades especiais.
 - Sistema de efeitos.
-
-## Em Desenvolvimento:
 - Inventário.
 - Exploração.
 - Aleatoriedade de eventos.
+
+## Em Desenvolvimento:
 - História.
 - Boss Final.
 

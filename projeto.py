@@ -372,24 +372,47 @@ def combate(principal, inimigo):
             if fugir == True:
                 break
 
+            try:
+                if principal.dragao != None:
+                    principal.dragao.decida(principal, inimigo)
+            except:
+                pass
+
+            if principal.vida <= 0:
+                exibe("[purple]Bebê Dragão[/] matou o inimigo!")
+                return False
+
             if fugir == "esquiva":
                 continue
 
-            else:
-                for efeito in inimigo.efeitos:
-                    efeito.aplicar(inimigo, principal)
+            for efeito in inimigo.efeitos:
+                efeito.aplicar(inimigo, principal)
 
-                
-                turno_inimigo(principal, inimigo)
-                if fugir == "reset_escudo":
-                    principal.atualiza_defesa()
-                enter()
-                if principal.vida > 0:
+            for item in inimigo.efeitos:
+                atual = item
+                if item.__class__.__name__ == "Paralizado":
+                    break
+                else:atual = None
+            if len(inimigo.efeitos) == 0:
+                atual = None
+            try:
+                if atual.__class__.__name__ == "Paralizado":
+                    exibe(f"{inimigo.nome} está [red]paralizado[/]", inimigo)
                     inimigo.atualizar_efeito()
-                if principal.vida <= 0:
-                    return False
-                if inimigo.vida <= 0:
-                    return True
+                    enter()
+                    continue
+            except:
+                pass
+            turno_inimigo(principal, inimigo)
+            if fugir == "reset_escudo":
+                principal.atualiza_defesa()
+            enter()
+            if principal.vida > 0:
+                inimigo.atualizar_efeito()
+            if principal.vida <= 0:
+                return False
+            if inimigo.vida <= 0:
+                return True
 
 
 def turno_jogador(principal, inimigo):
@@ -424,11 +447,6 @@ def turno_jogador(principal, inimigo):
                     return True
                 case _:
                     continue
-    try:
-        if principal.dragao != None:
-            principal.dragao.decida(principal, inimigo)
-    except:
-        pass
 
     return False
 
@@ -483,30 +501,31 @@ def atacar(principal, inimigo):
                         else:
                             break
                     continue
-            if resp == 0:
-                return "cancel"
+        if resp == 0:
+            return "cancel"
 
-            if resp == len(principal.ataques) + 1 and principal.carrega >= 100:
-                if principal.hability(inimigo) == "cancel":
-                    continue
+        if resp == len(principal.ataques) + 1 and principal.carrega >= 100:
+            resultado = principal.hability(inimigo)
+            if resultado == "cancel":
+                continue
+            else:
                 principal.carrega = 0
                 return
 
-            if list(principal.ataques.keys())[resp-1] != "Esquiva" and list(principal.ataques.keys())[resp-1] !="Teletransporte":
-                dmg = dano(principal, inimigo)
-                exibe(f"[red]{inimigo.nome}[/] recebeu [red]{dmg}[/] de dano.", dmg)
-                principal.carrega += 15
-            # FAZER O DA ESQUIVA E TELEPORTE AQUI
-                return
+        if list(principal.ataques.keys())[resp-1] != "Esquiva" and list(principal.ataques.keys())[resp-1] !="Teletransporte":
+            dmg = dano(principal, inimigo)
+            exibe(f"[red]{inimigo.nome}[/] recebeu [red]{dmg}[/] de dano.", dmg)
+            principal.carrega += 100
+            return
+        else:
+            exibe(f"{principal.nome} tenta esquivar:\nRolando dado...", principal, time = 0.02)
+            sorteado = randint(1, 6)
+            if sorteado > 2:
+                exibe(f"[green]Sucesso![/]\nDado: {sorteado}")
+                return "esquiva"
             else:
-                exibe(f"{principal.nome} tenta esquivar:\nRolando dado...", principal, time = 0.02)
-                sorteado = randint(1, 6)
-                if sorteado > 2:
-                    exibe(f"[green]Sucesso![/]\nDado: {sorteado}")
-                    return "esquiva"
-                else:
-                    exibe(f"[red]Fracasso![/]\nDado: {sorteado}")
-                    return
+                exibe(f"[red]Fracasso![/]\nDado: {sorteado}")
+                return
 
 
 def dano(principal, vitima):
@@ -680,20 +699,21 @@ class Mago(Personagem):
                     if atk == 0:
                         exibe("saindo..")
                         return "cancel"
-                    exibe(f"Habilidade Escolhida: [deep_purple]{list(self.habilidades.keys())[atk-1]}[/]", self)
+                    exibe(f"Habilidade Escolhida: [purple]{list(self.habilidades.keys())[atk-1]}[/]", self)
                     if atk == 1:
                         inimigo.vida -= 40
 
-                        exibe(f"{self.nome} Núvens negras cobrem o céu..\n[deep_purple]Diversos relâmpagos[/]"
-                              f" de repente caem sobre [deep_purple]{inimigo.nome}[/]"
-                              f"[red]{inimigo.nome}[/] Recebe [red]40[/] de dano e ficará [red]paralizado[/]", self, inimigo)
-                        inimigo.efeitos.append(Paralizado(2))
-                        return
+                        exibe(f"[purple]Núvens negras[/] cobrem o céu..\n[purple]Diversos relâmpagos[/]"
+                              f" de repente caem sobre "
+                              f"[red]{inimigo.nome}[/], que recebe [red]40[/] de dano e ficará [red]paralizado[/]"
+                              f"(1 ou 2 turnos)", self, inimigo)
+                        inimigo.efeitos.append(Paralizado(randint(1,2)))
+                        return 0
                     elif atk == 2:
                         self.ctrlinvoc()
-                        exibe("[deep_purple]Bebê Dragão[/] foi invocado! \nEle pode"
-                              " [deep_purple]atacar o inimigo[/] ou [deep_purple]curar o mago[/] por 2 rodadas")
-                        break
+                        exibe("[purple]Bebê Dragão[/] foi invocado! \nEle pode"
+                              " [purple]atacar o inimigo[/] ou [purple]curar o mago[/] por 2 rodadas")
+                        return 0
 
     def ctrlinvoc(self):
         if self.dragao == None:
@@ -830,9 +850,14 @@ class Minotauro(Inimigos):
         return dmg
 
     def curar(self):
-        sorteado = randint(20, 30)
-        self.vida += sorteado
-        exibe(f"[red]Minotauro[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+        if self.vida < 100:
+            if self.vida + 20 > 100:
+                self.vida = 100
+                exibe(f"{self.nome} usou atingiu a vida maxima (100 de vida)", self)
+                return
+            sorteado = randint(20, 30)
+            self.vida += sorteado
+            exibe(f"[red]Nessie[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
         return
 
     def hability(self, principal):
@@ -863,9 +888,14 @@ class Curupira(Inimigos):
         return dmg
 
     def curar(self):
-        sorteado = randint(20, 30)
-        self.vida += sorteado
-        exibe(f"[red]Curupira[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+        if self.vida < 100:
+            if self.vida + 20 > 100:
+                self.vida = 100
+                exibe(f"{self.nome} usou atingiu a vida maxima (100 de vida)", self)
+                return
+            sorteado = randint(20, 30)
+            self.vida += sorteado
+            exibe(f"[red]Nessie[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
 
         return
 
@@ -898,9 +928,14 @@ class Nessie(Inimigos):
         return dmg
 
     def curar(self):
-        sorteado = randint(20, 30)
-        self.vida += sorteado
-        exibe(f"[red]Nessie[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+        if self.vida < 100:
+            if self.vida + 20 > 100:
+                self.vida = 100
+                exibe(f"{self.nome} usou atingiu a vida maxima (100 de vida)", self)
+                return
+            sorteado = randint(20, 30)
+            self.vida += sorteado
+            exibe(f"[red]Nessie[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
 
         return
 
@@ -985,11 +1020,8 @@ class Paralizado(Efeitos):
         super().__init__("Paralizado", duracao, "Debuff")
 
     def aplicar(self, inimigo = None, principal = None):
-        for i in range(randint(1,2)):
-            exibe(f"{inimigo.nome} está atordoado", inimigo)
-            enter()#TEM QUE MUDAR ISSO. NÃO POSSO EMPILHAR CAMADAS DE TURNOS AQUI EM APLICAR EFEITOS, SENÃO
-            #QUANDO ALGUEM ZERAR A VIDA E DER RETURN ELE VAI TENTAR EXECUTAR O TURNO DO INIMIGO
-            turno_jogador(principal, inimigo)
+        pass
+
 
 class Perdido(Efeitos):
     def __init__(self):
@@ -1009,7 +1041,4 @@ class Perdido(Efeitos):
                 break
             turno_inimigo(personagem, inimigo)
 
-mago = Mago("alan", 30 ,30)
-cur = Curupira()
-mago.hability(cur)
-combate(mago, cur)
+menuinicial()

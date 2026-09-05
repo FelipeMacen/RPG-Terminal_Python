@@ -357,62 +357,62 @@ def nada_acontece(principal, lugar):
 #Sistema de Combate:
 def combate(principal, inimigo):
     while True:
-            for efeito in principal.efeitos:
-                efeito.aplicar(principal, inimigo)
+        for efeito in principal.efeitos:
+            efeito.aplicar(principal, inimigo)
 
-            fugir = turno_jogador(principal, inimigo)
-            enter()
-            if inimigo.vida > 0:
-                principal.atualizar_efeito()
-            if principal.vida <= 0:
-                return False
-            if inimigo.vida <= 0:
-                return True
+        fugir = turno_jogador(principal, inimigo)
+        enter()
+        if inimigo.vida > 0:
+            principal.atualizar_efeito()
+        if principal.vida <= 0:
+            return False
+        if inimigo.vida <= 0:
+            return True
 
-            if fugir == True:
+        if fugir == True:
+            break
+
+        try:
+            if principal.dragao != None:
+                principal.dragao.decida(principal, inimigo)
+        except:
+            pass
+
+        if inimigo.vida <= 0:
+            exibe("[purple]Bebê Dragão[/] matou o inimigo!")
+            return False
+
+        if fugir == "esquiva":
+            continue
+
+        for efeito in inimigo.efeitos:
+            efeito.aplicar(inimigo, principal)
+
+        for item in inimigo.efeitos:
+            atual = item
+            if item.__class__.__name__ == "Paralizado":
                 break
-
-            try:
-                if principal.dragao != None:
-                    principal.dragao.decida(principal, inimigo)
-            except:
-                pass
-
-            if principal.vida <= 0:
-                exibe("[purple]Bebê Dragão[/] matou o inimigo!")
-                return False
-
-            if fugir == "esquiva":
-                continue
-
-            for efeito in inimigo.efeitos:
-                efeito.aplicar(inimigo, principal)
-
-            for item in inimigo.efeitos:
-                atual = item
-                if item.__class__.__name__ == "Paralizado":
-                    break
-                else:atual = None
-            if len(inimigo.efeitos) == 0:
-                atual = None
-            try:
-                if atual.__class__.__name__ == "Paralizado":
-                    exibe(f"{inimigo.nome} está [red]paralizado[/]", inimigo)
-                    inimigo.atualizar_efeito()
-                    enter()
-                    continue
-            except:
-                pass
-            turno_inimigo(principal, inimigo)
-            if fugir == "reset_escudo":
-                principal.atualiza_defesa()
-            enter()
-            if principal.vida > 0:
+            else:atual = None
+        if len(inimigo.efeitos) == 0:
+            atual = None
+        try:
+            if atual.__class__.__name__ == "Paralizado":
+                exibe(f"{inimigo.nome} está [red]paralizado[/]", inimigo)
                 inimigo.atualizar_efeito()
-            if principal.vida <= 0:
-                return False
-            if inimigo.vida <= 0:
-                return True
+                enter()
+                continue
+        except:
+            pass
+        turno_inimigo(principal, inimigo)
+        if fugir == "reset_escudo":
+            principal.atualiza_defesa()
+        enter()
+        if principal.vida > 0:
+            inimigo.atualizar_efeito()
+        if principal.vida <= 0:
+            return False
+        if inimigo.vida <= 0:
+            return True
 
 
 def turno_jogador(principal, inimigo):
@@ -515,7 +515,7 @@ def atacar(principal, inimigo):
         if list(principal.ataques.keys())[resp-1] != "Esquiva" and list(principal.ataques.keys())[resp-1] !="Teletransporte":
             dmg = dano(principal, inimigo)
             exibe(f"[red]{inimigo.nome}[/] recebeu [red]{dmg}[/] de dano.", dmg)
-            principal.carrega += 100
+            principal.carrega += 15
             return
         else:
             exibe(f"{principal.nome} tenta esquivar:\nRolando dado...", principal, time = 0.02)
@@ -793,7 +793,7 @@ class Mercenario(Personagem):
         elif atk == 2:
             exibe(f"[bright_yellow]{self.nome}[/] de repente fica muito rapido.\n "
                   f"[bright_yellow]{self.nome}[/] fazer [bright_yellow]2 açoes no proximo turno[/]", self)
-            self.efeitos.append(Luz(1))#esse 1 é a quantidade de turnos a mais
+            self.efeitos.append(Luz(2))
 
         return
 
@@ -857,7 +857,7 @@ class Minotauro(Inimigos):
                 return
             sorteado = randint(20, 30)
             self.vida += sorteado
-            exibe(f"[red]Nessie[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+            exibe(f"[red]Minotauro[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
         return
 
     def hability(self, principal):
@@ -895,7 +895,7 @@ class Curupira(Inimigos):
                 return
             sorteado = randint(20, 30)
             self.vida += sorteado
-            exibe(f"[red]Nessie[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+            exibe(f"[red]Curupira[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
 
         return
 
@@ -929,13 +929,12 @@ class Nessie(Inimigos):
 
     def curar(self):
         if self.vida < 100:
-            if self.vida + 20 > 100:
+            if self.vida + self.curabase > 100:
                 self.vida = 100
                 exibe(f"{self.nome} usou atingiu a vida maxima (100 de vida)", self)
                 return
-            sorteado = randint(20, 30)
-            self.vida += sorteado
-            exibe(f"[red]Nessie[/] recuperou [bright_yellow]{sorteado}[/] pontos de vida", sorteado)
+            self.vida += self.curabase
+            exibe(f"[red]Nessie[/] recuperou [bright_yellow]{self.curabase}[/] pontos de vida", self)
 
         return
 
@@ -1041,4 +1040,7 @@ class Perdido(Efeitos):
                 break
             turno_inimigo(personagem, inimigo)
 
-menuinicial()
+mer = Mercenario("Mercenario", 25, 30)
+inimigo = Curupira()
+
+combate(mer, inimigo)

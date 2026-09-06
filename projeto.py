@@ -465,7 +465,7 @@ def turno_inimigo(principal, inimigo):
             dmg = inimigo.atacar(principal)
             inimigo.carrega += 50
 
-            exibe(f"[blue]{principal.nome}[/] recebeu [red]{dmg}[/] de dano", obj=principal, secundario=dmg)
+            exibe(f"[blue]{principal.nome}[/] recebeu [red]{int(dmg)}[/] de dano", obj=principal, secundario=dmg)
             return
         case 1:#curar
             inimigo.curar()
@@ -516,8 +516,8 @@ def atacar(principal, inimigo):
                 return
 
         if list(principal.ataques.keys())[resp-1] != "Esquiva" and list(principal.ataques.keys())[resp-1] !="Teletransporte":
-            dmg = dano(principal, inimigo)
-            exibe(f"[red]{inimigo.nome}[/] recebeu [red]{dmg}[/] de dano.", dmg)
+            dmg = dano(principal, inimigo, resp-1)
+            exibe(f"[red]{inimigo.nome}[/] recebeu [red]{int(dmg)}[/] de dano.", dmg)
             principal.carrega += 15
             return
         else:
@@ -531,9 +531,9 @@ def atacar(principal, inimigo):
                 return
 
 
-def dano(principal, vitima):
-    vitima.vida -= principal.danobase - principal.danobase * vitima.defesa / 100
-    return principal.danobase - principal.danobase * vitima.defesa / 100
+def dano(principal, vitima, atk):
+    vitima.vida -= principal.danobase * list(principal.ataques.values())[atk] - principal.danobase * list(principal.ataques.values())[atk] * vitima.defesa / 100
+    return principal.danobase * list(principal.ataques.values())[atk] - principal.danobase * list(principal.ataques.values())[atk] * vitima.defesa / 100
 
 def defender(principal, inimigo):
     limpa()
@@ -641,7 +641,7 @@ class Cavaleiro(Personagem):
         super().__init__(nome, defesa, danobase)
         self.vida = 100
         self.equipamentos = {"Espada": "descrição", "Escudo":"descrição"}
-        self.ataques = {"Ataque Com Espada": self.danobase*0.8, "Aparo": self.danobase*0.8, "Esquiva": self.danobase*0}
+        self.ataques = {"Ataque Com Espada": 0.8, "Aparo": 0.8, "Esquiva": 0}
         self.habilidades = {"Ataque Pesado":"descrição", "Bloqueio Com Escudo":"descrição"}
         self.inventario = {"Mapa":1, "Ataduras":2}
 
@@ -682,7 +682,7 @@ class Mago(Personagem):
         super().__init__(nome, defesa, danobase)
         self.vida = 100
         self.equipamentos = {"Livro de Feitiços":"descrição", "Cajado Mágico":"descrição",}
-        self.ataques = {"Ataque Com Cajado":self.danobase * 0.7, "Bola de Fogo":self.danobase * 0.8, "Teletransporte":self.danobase * 0}
+        self.ataques = {"Ataque Com Cajado":0.7, "Bola de Fogo":0.8, "Teletransporte":0}
         self.habilidades = {"Tempestade de Relâmpagos": "descrição", "Invocação Amiga": "descrição"}
         self.inventario = {"Mapa":1, "Poções de cura":2}
         self.dragao = None
@@ -763,7 +763,7 @@ class Mercenario(Personagem):
         super().__init__(nome, defesa, danobase)
         self.vida = 100
         self.equipamentos = {"Adagas":"descrição",  "Facas arremessaveis":"descrição"}
-        self.ataques = {"Ataque Com Adaga": self.danobase * 0.8, "Arremessar Faca":self.danobase * 0.8, "Esquiva": self.danobase * 0}
+        self.ataques = {"Ataque Com Adaga":0.8, "Arremessar Faca":0.8, "Esquiva": 0}
         self.habilidades = {"Investida Vorpal":"descrição", "Filho da luz":"descrição"}
         self.inventario = {"Mapa":1, "Ataduras":2}
 
@@ -839,8 +839,8 @@ class Inimigos(ABC):
 
 class Minotauro(Inimigos):
     def __init__(self):
-        super().__init__("Minotauro", 30)
-        self.ataques = {"Soco Pesado":self.danobase*1, "Coice Duplo":self.danobase*1, "Lançardor Subterraneo":self.danobase*1}
+        super().__init__("Minotauro", 35)
+        self.ataques = {"Soco Pesado":1, "Coice Duplo":1, "Lançardor Subterraneo":1}
         self.habilidades = {"Chife Demoníaco": 44, "Furia Divina":10}
         #investida para chifrar o inimigo
         #furia divina: os proximos 3 ataques dele terão +50% de dano.
@@ -849,7 +849,7 @@ class Minotauro(Inimigos):
         sorteado = randint(0, 2)
 
         exibe(f"Minotauro escolheu {list(self.ataques.keys())[sorteado]}", self, sorteado)
-        dmg = dano(self, inimigo)
+        dmg = dano(self, inimigo, sorteado)
         return dmg
 
     def curar(self):
@@ -877,15 +877,15 @@ class Minotauro(Inimigos):
 
 class Curupira(Inimigos):
     def __init__(self):
-        super().__init__("Curupira", 45)
-        self.ataques = {"Chute Trocado": 30, "Investida Furiosa": 30, "Chicote de Cipó":30}
+        super().__init__("Curupira", 35)
+        self.ataques = {"Chute Trocado": 1, "Investida Furiosa": 1, "Chicote de Cipó":1}
         self.habilidades = {"Confusão Mental": 35, "Pai Natureza":44}
 
     def atacar(self, inimigo):
         sorteado = randint(0, 2)
 
         exibe(f"Curupira escolheu {list(self.ataques.keys())[sorteado]}", self, sorteado)
-        dmg = dano(self, inimigo)
+        dmg = dano(self, inimigo, sorteado)
         return dmg
 
     def curar(self):
@@ -917,8 +917,8 @@ class Curupira(Inimigos):
 
 class Nessie(Inimigos):
     def __init__(self):
-        super().__init__("Nessie", 30)
-        self.ataques = {"Martelo de Cauda": 30, "Tiro de Água":30, "Mordida Feroz": 30}
+        super().__init__("Nessie", 35)
+        self.ataques = {"Martelo de Cauda":1, "Tiro de Água":1, "Mordida Feroz": 1}
         self.habilidades = { "Canhão de Água": 44, "Território": 0}
         #territorio: tentar levar o inimigo para o fundo do mar. Os ataques do nessie ficariam muito mais fortes
         #e o do principal muito mais fracos
@@ -927,7 +927,7 @@ class Nessie(Inimigos):
         sorteado = randint(0, 2)
 
         exibe(f"Nessie escolheu {list(self.ataques.keys())[sorteado]}", self, sorteado)
-        dmg = dano(self, inimigo)
+        dmg = dano(self, inimigo, sorteado)
         return dmg
 
     def curar(self):
@@ -1053,3 +1053,4 @@ class Perdido(Efeitos):
             self.duracao -= 1
 
 menuinicial()
+#Verifique se eu implementei corretamente a ideia. Veja também se algum outro erro envolvendo lógica ou até mesmo crash por favor.

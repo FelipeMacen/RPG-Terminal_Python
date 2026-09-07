@@ -69,7 +69,7 @@ def menuinicial():
 
     enter()
     limpa()
-    vila_inicial(meth)
+    primeira_missao(meth)
 
 #Funcionalidade que controla toda a parte de criação do personagem.
 def criacao():
@@ -146,10 +146,9 @@ def enter():
             break
 
 #Mundo e Exploração:
-def vila_inicial(principal):
+def primeira_missao(principal):
     while True:
-        exibe(f"{principal.nome} se encontra na Vila Inicial.\n"
-              f"Após receber sua missão, Você pode escolher 3 caminhos para seguir:\n", principal, time=0.02)
+        exibe(f"Após receber sua missão, Você pode escolher 3 caminhos para seguir:\n", time=0.02)
         principal.mapa()
         exibe("Por Qual Delas Deseja Seguir?\n[1]LAGO DO ESQUECIMENTO\n"
                      "[2]FLORESTA DA PERDIÇÃO\n[3]CAVERNA LABIRÍNTICA\n", time=0.03)
@@ -158,15 +157,77 @@ def vila_inicial(principal):
         match resp:
             case "1":
                 lago_do_esquecimento(principal)
-                return
+                break
             case "2":
                 floresta_da_perdicao(principal)
-                return
+                break
             case "3":
                 caverna_labirintica(principal)
-                return
+                break
             case _:
                 print("Por favor, Escolha uma opção válida")
+                continue
+
+    #DECISAO SE VAI SEGUIR VIAGEM OU VOLTAR PARA VILA
+
+def vila_inicial(principal):
+    exibe(f"[blue]{principal.nome}[/] se encontra na vila inicial")
+    enter()
+    exibe("O que deseja fazer?\n[1]Descansar\n[2]Mecadinho\n")
+    resp = input()
+    while True:
+        match resp:
+            case "1":
+                descanso(principal)
+                enter()
+            case "2":
+                mercadinho(principal)
+            case _:
+                continue
+        break
+
+def descanso(principal):
+    if principal.__class__.__name__ == "Cavaleiro":
+        exibe(
+            f"{principal.nome} gasta algum tempo na academia pois isso o ajuda a colcoar os pensamentos em ordem, "
+            f"e tem uma boa noite de sono em sua residência antes de prosseguir viagem...")
+        exibe(f"[green]Vida regenerada\nCheck Point atualizado[/]")
+        enter()
+    elif principal.__class__.__name__ == "Mago":
+        exibe(
+            f"{principal.nome} passa na [purple]biblioteca de Spell Town[/]"
+            f" em busca de alguma resposta para os estranhos acontecimentos da jornada. E após algumas horas de leitura"
+            f"vai para casa descansar antes de prosseguir na sua jornada...")
+        exibe(f"[green]Vida regenerada\nCheck Point atualizado[/]")
+        enter()
+    else:
+        exibe(f"{principal.nome} volta para sua humilde vila antes de prosseguir viagem. Encontra bons amigos no caminho"
+              f" e finalmente chega em casa, onde é recebido com muito amor por todos da familia...")
+        exibe(f"[green]Vida regenerada\nCheck Point atualizado[/]")
+        enter()
+
+def mercadinho(principal):
+    exibe(f"{principal.nome} chega ao [light_salmon1]mercadinho do Rudolf[/]:")
+    enter()
+    while True:
+        exibe("OPÇÕES:\n"
+              f"[bright_yellow]Dinheiro de {principal.nome}: {principal.dinheiro}[/]"
+              "[0]Voltar\n"
+              "[1]Item de Cura[bright_yellow]10 moedas[]\n"
+              "[2]Em breve\n"
+              "[3]Em breve\n"
+              "Qual item deseja comprar?\n")
+        resp = input()
+        match resp:
+            case "0":
+                break
+            case "1":
+                if principal.dinheiro >= 10:
+                    principal.dinheiro -= 10
+                    principal.inventario[list(principal.inventario.keys())[1]] += 1
+                else:
+                    exibe("[dark_red]dinheiro insuficiente[/]")
+            case _:
                 continue
 
 def lago_do_esquecimento(principal):
@@ -180,9 +241,25 @@ def lago_do_esquecimento(principal):
 
     enter()
     if combate(principal, Nessie()):
-        exibe("Após derrotar Nissie, a densidade do lago desaparece e você consegue ver que no fundo"
-              "do profundo lago, parece ter algo como um laboratório.\n")
-        #talvez adquirir um item
+        exibe("[red]Nessie derrotado[/]!...\n")
+        enter()
+        limpa()
+        exibe("Após a derrota, o corpo do monstro permanece boiando de barriga para cima na água.")
+        enter()
+        exibe(f"{principal.nome} percebe que tem algo como uma [blue]Máscara[/] presa ao peito de Nissie."
+              f"{principal.nome} se aproxima e com pouco esforço arranca a máscara do peito de Nessie.")
+        enter()
+        limpa()
+        exibe(f"[bright_blue]Máscara de água[/] adicionada ao inventário do jogador.")
+        principal.inventario["Máscara do esquecimento"] = "descricao"
+        exibe("Deseja abrir o inventário?\n[1]Sim\n[2]Não\n")
+        resp = input()
+        if resp == "1":
+            inventario(principal)
+        else:
+            pass#Decidir se continua caminho. reseta vida e continua pro portão final, vai pra outro ambiente...
+
+        #talvez acessar inventario
     else:
         if principal.vida <= 0:
             exibe("[red]GAME OVER[/]\nretornando para o último checkpoint...")
@@ -202,8 +279,25 @@ def floresta_da_perdicao(principal):
 
     enter()
     if combate(principal, Curupira()):
-        exibe("ganhou paezao")
-    # talvez adquirir um item
+        exibe("[red]Curupira derrotado![/]...\n")
+        enter()
+        limpa()
+        exibe(
+            "Com a queda do corpo de Curupira, todos os animais fazem um [red]barulho ensurcedor[/] e grande tumulto se"
+            "instaura na floresta...")
+        enter()
+        exibe(f"{principal.nome} percebe que a[orange1]Máscara[/] de curupira começa a  brilhar.."
+              f"{principal.nome} se aproxima e com pouco esforço arranca a [orange1]máscara de curupira[/].")
+        enter()
+        limpa()
+        exibe(f"[orange1]Máscara de Fogo[/] adicionada ao inventário do jogador.")
+        principal.inventario["Máscara de Fogo"] = "descricao"
+        exibe("Deseja abrir o inventário?\n[1]Sim\n[2]Não\n")
+        resp = input()
+        if resp == "1":
+            inventario(principal)
+        else:
+            pass  # Decidir se continua caminho. reseta vida e continua pro portão final, vai pra outro ambiente...
     else:
         if principal.vida <= 0:
             exibe("[red]GAME OVER[/]\nretornando para o último checkpoint...")
@@ -227,9 +321,24 @@ def caverna_labirintica(principal):
 
     exibe("[red]MINOTAURO Acorda..[/]")
     enter()
-    if combate(principal, Minotauro()):
-        exibe("ganhou pae")
-    # talvez adquirir um item
+    if True:#combate(principal, Minotauro()):
+        exibe("[red]Minotauro derrotado![/]...\n")
+        enter()
+        limpa()
+        exibe("Seu enorme corpo [red]despenca para frente[/], causando grande estrondo em toda a caverna...")
+        enter()
+        exibe(f"{principal.nome} percebe que tem algo como uma [dark_orange3]Máscara[/] presa nas costas de minotauro."
+              f"{principal.nome} se aproxima e com pouco esforço arranca a [dark_orange3]máscara das costas de minotauro[/].")
+        enter()
+        limpa()
+        exibe(f"[dark_orange3]Máscara de Pedra[/] adicionada ao inventário do jogador.")
+        principal.inventario["Máscara de Pedra"] = "descricao"
+        exibe("Deseja abrir o inventário?\n[1]Sim\n[2]Não\n")
+        resp = input()
+        if resp == "1":
+            inventario(principal)
+        else:
+            pass  # Decidir se continua caminho. reseta vida e continua pro portão final, vai pra outro ambiente...
     else:
         if principal.vida <= 0:
             exibe("[red]GAME OVER[/]\nretornando para o último checkpoint...")
@@ -443,6 +552,7 @@ def turno_jogador(principal, inimigo):
                     defender(principal, inimigo)
                     return "reset_escudo"
                 case 3:
+                    exibe("Deseja usar qual item:\n")
                     if inventario(principal, inimigo) == "cancel":
                         continue
                     break
@@ -542,11 +652,9 @@ def defender(principal, inimigo):
     exibe(f"{principal.nome} defenderá o dano parcialmente! [blue](defesa aumentada em 20%)[/]")
 
 
-def inventario(principal, inimigo):
-    limpa()
+def inventario(principal, inimigo= None):
     cont = 1
-    conteudo = "Deseja usar qual item:\n"
-    conteudo += "[0]Sair\n"
+    conteudo = "\n[0]Sair\n"
     for i, k in principal.inventario.items():
         conteudo += f"[[bright_white]{cont}[/]]{i}: {k}\n"
         cont += 1
@@ -598,6 +706,8 @@ class Personagem(ABC):
 
     def mapa(self):
         exibe(
+            f"{' ' * 38}?\n"
+            f"\n{' '*18}/{' '* 19}|{' '*18}{chr(92)}"
             f"\nLAGO DO ESQUECIMENTO{' '*8}FLORESTA DA PERDIÇÃO{' '*8}CAVERNA LABIRÍNTICA\n"
             f"[bright_white]{' '*21} {chr(92)}{' '*15}|{' '*17}/[/]\n\n"
             f"{' '* 32}VILA INICIAL"
@@ -1052,5 +1162,8 @@ class Perdido(Efeitos):
             turno_inimigo(personagem, inimigo)
             self.duracao -= 1
 
+#menuinicial()
+
+cav = Cavaleiro("maico", 30, 30)
 menuinicial()
-#Verifique se eu implementei corretamente a ideia. Veja também se algum outro erro envolvendo lógica ou até mesmo crash por favor.
+

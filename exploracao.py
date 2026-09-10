@@ -1,6 +1,8 @@
 from inimigos import *
 from principais import *
 import sys
+from npcs import buscar_npc
+from ia import *
 
 def controla_exploracao(principal, local):
     while True:
@@ -121,11 +123,16 @@ def lago_do_esquecimento(principal):
         evento_aleatorio(principal, "lago")
         return "lago"
     else:
-        for _ in range(randint(1, 2)):
-            evento_aleatorio(principal, "lago")
+        evento_aleatorio(principal, "lago")
+        enter()
+        limpa()
+        try:
+            npc(principal, "lago")
+        except:
+            print("[red]Ocorreu algum erro ao tentar executar o envento de interação com npc.[/]")
 
         exibe(
-            f"Você se vê sozinho em um [red]imenso e denso lago...[/]")
+            f"Após algumas horas... Você se vê sozinho em um [red]imenso e denso lago...[/]")
         enter()
         exibe(f"{principal.nome} olha para baixo e percebe que é como se"
             f" algo enorme estivesse se movimentando no fundo do lago. "
@@ -166,11 +173,15 @@ def floresta_da_perdicao(principal):
         enter()
         return "floresta"
     else:
-        for _ in range(randint(1, 2)):
-            evento_aleatorio(principal, "floresta")
-
+        evento_aleatorio(principal, "floresta")
         enter()
-        exibe("De repente, em meio a densa floresta..\nVocê começa a ouvir [red]longos assobios..[/]\n"
+        limpa()
+        try:
+            npc(principal, "floresta")
+        except:
+            print("[red]Ocorreu algum erro ao tentar executar o envento de interação com npc.[/]")
+
+        exibe("Após muito vagar na densa floresta..\nVocê começa a ouvir [red]longos assobios..[/]\n"
               f"[blue]{principal.nome}[/] vai ficando cada vez mais [red]zonzo e perdido...[/]")
         exibe(f"Quando se da conta, você está totalmente [red]perdido, no coração da floresta.[/] Quando de repente...\n"
               f"[red]CURUPIRA aparece[/]", obj=principal)
@@ -212,9 +223,16 @@ def caverna_labirintica(principal):
         return "caverna"
     else:
         while True:
-            for _ in range(randint(1, 2)):
-                evento_aleatorio(principal, "caverna")
-            exibe("Você encontra uma figura estranha. Algo como um [red]urso com chifres[/]"
+            evento_aleatorio(principal, "caverna")
+            enter()
+            limpa()
+            try:
+                npc(principal, "caverna")
+            except:
+                print("[red]Ocorreu algum erro ao tentar executar o envento de interação com npc.[/]")
+
+
+            exibe("Após vagar muito no labirinto... Você encontra uma figura estranha. Algo como um [red]urso com chifres[/]"
                   " aparentemente dormindo...\nDeseja se aproximar?\n[1]Sim\n[2]Não\n")
 
             resp = input()
@@ -292,69 +310,57 @@ def portoes(principal):
         return "portoes"
 
 def evento_aleatorio(principal, lugar):
-    sorteado = randint(0, 2)
+    sorteado = randint(1, 2)
 
     match sorteado:
-        case 0:
-            npc(principal, lugar)
         case 1:
             item_aleatorio(principal, lugar)
         case _:
             nada_acontece(principal, lugar)
 
 
-def npc(principal, lugar):
-    if lugar == "lago":
-        exibe(f"{principal.nome} avista um grupo de [yellow]pescadores[/]\nDeseja se aproximar?\n[1]Sim\n[2]Não\n", obj=principal)
-        resp = input()
-        match resp:
-            case "1":
-                exibe(f"[yellow]Pescadores:[/] O que está fazendo aqui?\n[blue]{principal.nome}:[/]\n"
-                      f"[1]Apenas de passagem...\n[2]Não é da sua conta\n", obj=principal)
-                resp = input()
-                match resp:
-                    case "1":
-                        exibe("[yellow]Pescadores:[/] Normalmente ninguém vem aqui. Até o número de pescadores diminui"
-                              "depois que os peixes começaram a morrer de forma misteriosa. Deve ser"
-                              "o [red]Monstro do lago ness[/] que ronda essa região. Tome cuidado amigo...")
-                    case _:
-                        exibe("[yellow]Pescadores:[/] Entendido, boa viagem.")
+def npc(principal, lugar):#ESSA FUNÇÃO VAI MUDAR TOTALMENTE.
+    while True:
+        match lugar:
+            case "lago":
+                chave = "pescador"
+                exibe(f"{principal.nome} avista um [yellow]velho pescador[/] e decide parar para conversar...")
+                enter()
+                break
+            case "floresta":
+                chave = "aventureiro"
+                exibe(f"{principal.nome} avista um [green]aventureiro[/] e decide parar para conversar...")
+                enter()
+                break
+            case "caverna":
+                chave = "mascarado"
+                exibe(f"{principal.nome} avista um [red]homem mascarado bizarro[/] e decide parar para conversar...")
+                enter()
+                break
             case _:
-                pass
-        return
-    elif lugar == "floresta":
-        exibe(f"{principal.nome} avista um [green]aventureiro[/] com uma cara de confuso assustadora.\nDeseja se aproximar?"
-              f"\n[1]Sim\n[2]Não\n", obj=principal)
-        resp = input()
-        match resp:
-            case "1":
-                exibe("[green]Aventureiro:[/] Que bom ver um rosto humano após tanto tempo...")
-                while True:
-                    exibe("[green]Aventureiro: [/]Por favor companheiro, diga me por qual caminho você entrou na Floresta?"
-                          "\n[1]Apontar Direção\n[2]Perguntar o que aconteceu.\n")
-                    resp = input()
-                    if resp == "1":
-                        break
-                    else:
-                        exibe("[green]Aventureiro: [/]Não sei. Tudo que eu me lembro é daquele [red]tenebroso assobio[/]")
-                        continue
+                raise PermissionError("Não tem como")
 
-            case _:
-                pass
-        return
-    else:
-        exibe(f"Assim que {principal.nome} vira mais uma esquina do labirinto, se depara com um [red]homem mascarado[/].",
-              obj=principal)
+    dados_npc = buscar_npc(chave)
+    conversa = ConversaNpc(dados_npc)
+
+    while True:
+        exibe("[0] Sair")
+        mensagem = input("Digite a mensagem: ")
+        if mensagem == "0":
+            exibe("saindo...")
+            limpa()
+            break
+
+        resultado = conversa.enviar(mensagem)
+
+        exibe(f"{dados_npc['nome']}: {resultado['fala']}\n")
         enter()
-        exibe("[red]Mascarado: [/]Ainda bem que você chegou!\nVamos, me dê logo o que combinamos com a realeza.\n"
-              "[1]Não sei do que está falando\n[2]Putz! Devo ter deixado cair no caminho.\n")
-        input()
-        exibe(
-            "[red]Como assim!?[/] Você é de fato um subordinado do [red]Herold[/]? Me diga o código que ele te mandou dizer:\nCódigo: \n")
-        input()
-        exibe("[red]Certo..[/] Apenas ignore tudo que aconteceu tá bom? Só finja que nunca me viu..."
-              "\n [red]Mascarado[/] vira uma esquina do labirinto e [red]desaparece.[/]")
-        return
+        limpa()
+        if resultado["encerrar"]:
+            exibe(f"{dados_npc['nome']} começa a se a afastar e encerra a conversa.")
+            break
+    #aventureiro,pescador e mascarado
+#AQUI É SÓ VER O LUGAR. E CHAMAR O NPC DE ACORDO.
 
 
 def item_aleatorio(principal, lugar):
@@ -387,7 +393,7 @@ def item_aleatorio(principal, lugar):
                 case "1":
                     exibe("O caderno de anotações está com diversas folhas rasgadas. Mas as poucas restantes dizem:\n"
                           "...Esses caras são [red]insanos[/]. Tive que rasgar a maioria das folhas do meu diário para"
-                          "não descobrirem. Eles pretendem dominar o mundo com a [bright_magenta]EPI[/]."
+                          " não descobrirem. Eles pretendem dominar o mundo com a [bright_magenta]EPI[/]."
                           f"Estão pensando até em colocar algum tipo de [red]Guardião[/] nesse lugar!"
                           f"Se alguém encontrar esse diário, [red]fuja imediatamente desse lugar[/].")
                 case _:

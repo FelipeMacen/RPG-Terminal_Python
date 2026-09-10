@@ -22,6 +22,13 @@ Um jogo RPG por texto desenvolvido em Python.
 - JSON.
 - Inteligência Artificial (Ollama).
 
+## Demonstração:
+### Exploração e interações com NPC:
+![Demonstração de exploração e interações com npc](docs/exploracao-npc.gif)
+
+### Sistema de Combate:
+![Demonstração do sistema de combate](docs/combate.gif)
+
 ## Pré-Requisitos:
 - Python 3.10 ou superior.
 - Biblioteca Rich do Python.

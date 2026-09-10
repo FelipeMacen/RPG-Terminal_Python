@@ -128,8 +128,8 @@ def lago_do_esquecimento(principal):
         limpa()
         try:
             npc(principal, "lago")
-        except:
-            print("[red]Ocorreu algum erro ao tentar executar o envento de interação com npc.[/]")
+        except Exception as erro:
+            print(f"[red]Ocorreu algum erro ao tentar executar o envento de interação com npc ({erro}).[/]")
 
         exibe(
             f"Após algumas horas... Você se vê sozinho em um [red]imenso e denso lago...[/]")
@@ -178,8 +178,8 @@ def floresta_da_perdicao(principal):
         limpa()
         try:
             npc(principal, "floresta")
-        except:
-            print("[red]Ocorreu algum erro ao tentar executar o envento de interação com npc.[/]")
+        except Exception as erro:
+            print(f"[red]Ocorreu algum erro ao tentar executar o envento de interação com npc ({erro}).[/]")
 
         exibe("Após muito vagar na densa floresta..\nVocê começa a ouvir [red]longos assobios..[/]\n"
               f"[blue]{principal.nome}[/] vai ficando cada vez mais [red]zonzo e perdido...[/]")
@@ -228,8 +228,8 @@ def caverna_labirintica(principal):
             limpa()
             try:
                 npc(principal, "caverna")
-            except:
-                print("[red]Ocorreu algum erro ao tentar executar o envento de interação com npc.[/]")
+            except Exception as erro:
+                print(f"[red]Ocorreu algum erro ao tentar executar o envento de interação com npc. ({erro})[/]")
 
 
             exibe("Após vagar muito no labirinto... Você encontra uma figura estranha. Algo como um [red]urso com chifres[/]"
@@ -320,25 +320,21 @@ def evento_aleatorio(principal, lugar):
 
 
 def npc(principal, lugar):#ESSA FUNÇÃO VAI MUDAR TOTALMENTE.
-    while True:
-        match lugar:
-            case "lago":
-                chave = "pescador"
-                exibe(f"{principal.nome} avista um [yellow]velho pescador[/] e decide parar para conversar...")
-                enter()
-                break
-            case "floresta":
-                chave = "aventureiro"
-                exibe(f"{principal.nome} avista um [green]aventureiro[/] e decide parar para conversar...")
-                enter()
-                break
-            case "caverna":
-                chave = "mascarado"
-                exibe(f"{principal.nome} avista um [red]homem mascarado bizarro[/] e decide parar para conversar...")
-                enter()
-                break
-            case _:
-                raise PermissionError("Não tem como")
+    match lugar:
+        case "lago":
+            chave = "pescador"
+            exibe(f"{principal.nome} avista um [yellow]velho pescador[/] e decide parar para conversar...")
+            enter()
+        case "floresta":
+            chave = "aventureiro"
+            exibe(f"{principal.nome} avista um [green]aventureiro[/] e decide parar para conversar...")
+            enter()
+        case "caverna":
+            chave = "mascarado"
+            exibe(f"{principal.nome} avista um [red]homem mascarado bizarro[/] e decide parar para conversar...")
+            enter()
+        case _:
+            print("[red]Ocorreu algum erro inesperado[/]")
 
     dados_npc = buscar_npc(chave)
     conversa = ConversaNpc(dados_npc)

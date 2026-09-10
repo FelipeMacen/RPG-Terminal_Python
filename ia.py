@@ -23,7 +23,7 @@ class ConversaNpc:
     def prompt(self):
         conhecimentos = ""
         for item in self.dados["conhecimentos"]:
-            conhecimentos += item
+            conhecimentos += "," + item
 
         return (
             f"Você é {self.dados['nome']}, um npc de um jogo rpg.\n"

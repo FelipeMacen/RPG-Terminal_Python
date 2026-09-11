@@ -49,7 +49,7 @@ As conversas com os NPCs usam um modelo de linguagem rodando **localmente** na s
 1. Baixe e instale o Ollama em [ollama.com](https://ollama.com)
 2. Baixe o modelo de inteligência artificial usado pelo projeto:
 ```bash
-   ollama pull gemma3:1b
+   ollama pull gemma3:4b
 ```
 
 ### 4. Rode o jogo

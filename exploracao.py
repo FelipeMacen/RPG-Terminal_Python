@@ -171,6 +171,8 @@ def floresta_da_perdicao(principal):
     if "[green]Máscara de Folha[/]" in principal.inventario:
         exibe(f"[blue]{principal.nome}[/] retorna para a floresta onde derretou [red]Curupira[/].")
         enter()
+        limpa()
+        evento_aleatorio(principal, "floresta")
         return "floresta"
     else:
         evento_aleatorio(principal, "floresta")
@@ -219,6 +221,8 @@ def caverna_labirintica(principal):
     limpa()
     if "[dark_orange3]Mascara de Pedra[/]" in principal.inventario:
         exibe(f"[blue]{principal.nome}[/] retorna para caverna onde teve seu terrível confronto com [red]Minotauro[/]")
+        enter()
+        limpa()
         evento_aleatorio(principal, "caverna")
         return "caverna"
     else:

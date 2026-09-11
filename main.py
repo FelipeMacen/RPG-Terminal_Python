@@ -152,8 +152,5 @@ def criacao():
 
     return principal
 
-#menuinicial()
+menuinicial()
 
-cav = Cavaleiro("Geralt", 30, 30)
-
-controla_exploracao(cav, "vila")

@@ -177,7 +177,7 @@ class Dragao:
         sorteado = randint(20, 40)
         principal.vida += sorteado
 
-        exibe(f"{principal.vida} recebeu {sorteado} pontos de vida", principal, sorteado)
+        exibe(f"[blue]{principal.nome}[/] recebeu [green]{sorteado}[/] pontos de vida", principal, sorteado)
         self.turnos_restantes -= 1
         if self.turnos_restantes == 0:
             principal.dragao = None

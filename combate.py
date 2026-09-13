@@ -114,7 +114,7 @@ def turno_inimigo(principal, inimigo):
                     inimigo.carrega = 0
                     return
                 dmg = inimigo.atacar(principal)
-                inimigo.carrega += 25
+                inimigo.carrega += 20
 
                 exibe(f"[blue]{principal.nome}[/] recebeu [red]{int(dmg)}[/] de dano", obj=principal, secundario=dmg)
                 return

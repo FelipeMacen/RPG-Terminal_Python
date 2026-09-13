@@ -29,6 +29,10 @@ Um jogo RPG por texto desenvolvido em Python.
 ### Sistema de Combate:
 ![Demonstração do sistema de combate](docs/combate.gif)
 
+### Video de Demonstração (Clique na Imagem):
+
+[![Video do youtube da gameplay](https://img.youtube.com/vi/UXLYagjwYbA/0.jpg)](https://www.youtube.com/watch?v=UXLYagjwYbA)
+
 ## Pré-Requisitos:
 - Python 3.10 ou superior.
 - Biblioteca Rich do Python.

@@ -25,20 +25,10 @@ def controla_exploracao(principal, local):
         if local == "vila" or local == "portoes":
             match resp:
                 case "1":
-                    exibe(
-                        f"[blue]{principal.nome}[/] se encontra em sua canoa em um enorme e profundo lago...")
-                    enter()
-                    exibe("Após vagar por horas...")
                     local = lago_do_esquecimento(principal)
                 case "2":
-                    exibe(f"[blue]{principal.nome}[/] se encontra em uma floresta repleta das mais diversas criaturas...")
-                    enter()
-                    exibe("Após vagar por horas...")
                     local = floresta_da_perdicao(principal)
                 case "3":
-                    exibe(f"[blue]{principal.nome}[/] se encontra em uma caverna [red]estremamente escura[/].")
-                    enter()
-                    exibe("Após vagar por horas...")
                     local = caverna_labirintica(principal)
                 case _:
                     print("[red]Digite uma opção válida.[/]")
@@ -133,6 +123,9 @@ def lago_do_esquecimento(principal):
         evento_aleatorio(principal, "lago")
         return "lago"
     else:
+        exibe(f"[blue]{principal.nome}[/] se encontra em sua canoa em um enorme e profundo lago...")
+        enter()
+        exibe("Após vagar por horas...")
         evento_aleatorio(principal, "lago")
         enter()
         limpa()
@@ -186,6 +179,9 @@ def floresta_da_perdicao(principal):
         evento_aleatorio(principal, "floresta")
         return "floresta"
     else:
+        exibe(f"[blue]{principal.nome}[/] se encontra em uma floresta repleta das mais diversas criaturas...")
+        enter()
+        exibe("Após vagar por horas...")
         evento_aleatorio(principal, "floresta")
         enter()
         limpa()
@@ -237,6 +233,8 @@ def caverna_labirintica(principal):
         evento_aleatorio(principal, "caverna")
         return "caverna"
     else:
+        exibe(f"[blue]{principal.nome}[/] se encontra em uma caverna [red]estremamente escura[/].")
+        enter()
         while True:
             evento_aleatorio(principal, "caverna")
             enter()
@@ -322,6 +320,10 @@ def portoes(principal):
         enter()
         sys.exit(0)
     else:
+        exibe(f"Faltam [red]{5 - len(principal.inventario)} máscaras dos guardiões[/]...")
+        enter()
+        exibe(f"[blue]{principal.nome}[/] se vê obrigado a pegar as máscaras que faltam caso queira prosseguir na investigação.")
+        enter()
         return "portoes"
 
 def evento_aleatorio(principal, lugar):
